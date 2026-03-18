@@ -2,15 +2,17 @@ import crypto from "crypto";
 
 const adminEmail = process.env.ADMIN_EMAIL;
 const adminPassword = process.env.ADMIN_PASSWORD;
-const secret = process.env.ADMIN_JWT_SECRET;
+const rawSecret = process.env.ADMIN_JWT_SECRET;
 
 if (!adminEmail || !adminPassword) {
   throw new Error("ADMIN_EMAIL and ADMIN_PASSWORD must be set in env");
 }
 
-if (!secret) {
+if (!rawSecret) {
   throw new Error("ADMIN_JWT_SECRET must be set in env");
 }
+
+const secret: string = rawSecret;
 
 type AdminTokenPayload = {
   email: string;

@@ -1,10 +1,12 @@
 import { MongoClient, Db } from "mongodb";
 
-const uri = process.env.MONGODB_URI;
+const rawUri = process.env.MONGODB_URI;
 
-if (!uri) {
+if (!rawUri) {
   throw new Error("MONGODB_URI is not set in environment variables");
 }
+
+const uri: string = rawUri;
 
 let client: MongoClient | null = null;
 let db: Db | null = null;
