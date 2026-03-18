@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 type Props = {
   href?: string;
   type?: "button" | "submit" | "reset";
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
+  disabled?: boolean;
   variant?: "primary" | "secondary" | "ghost";
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -24,6 +25,7 @@ export function Button({
   href,
   type = "button",
   onClick,
+  disabled,
   variant = "primary",
   size = "md",
   className,
@@ -76,7 +78,13 @@ export function Button({
   }
 
   return (
-    <button type={type} onClick={onClick} className={cls} style={style}>
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={cls}
+      style={style}
+    >
       {content}
     </button>
   );
