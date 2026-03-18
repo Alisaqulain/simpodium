@@ -107,67 +107,68 @@ export default function Home() {
       </section>
 
       {/* BRANDS / SEGMENTS */}
-      <section className="relative py-12 sm:py-16">
+      <section className="relative py-16 sm:py-20">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <Image
             src="/Ferrari.jpeg"
             alt="Premium manufacturer grid"
             fill
             priority={false}
-            className="object-cover opacity-45 blur-sm"
+            className="object-cover opacity-40 blur-sm"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/92 to-black/95" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/88 via-black/94 to-black/98" />
         </div>
         <div className="sp-container relative z-10">
-          <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)]">
-            <div className="relative">
-              <div className="pointer-events-none absolute -inset-x-10 -top-10 bottom-0 -z-10 opacity-60">
-                <Image
-                  src="/Ferrari.jpeg"
-                  alt="Ferrari paddock lighting"
-                  fill
-                  sizes="50vw"
-                  className="object-cover blur-md"
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/60 to-black/85" />
+          <Reveal>
+            <SectionHeading
+              eyebrow="TRUSTED BRANDS & RACING PARTNERS"
+              title="Premium manufacturers, race teams, and collectibles"
+              desc="A curated grid across MJX HyperGo, Mini GT, Pop Race, Tomica, Bburago and iconic teams like Ferrari, Red Bull, McLaren, Mercedes, Audi, BMW, and Lamborghini."
+            />
+          </Reveal>
+
+          <Reveal delay={0.08}>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+              <div className="inline-flex flex-wrap gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/70 backdrop-blur">
+                <span>MJX HyperGo</span>
+                <span className="h-1 w-1 rounded-full bg-white/40" />
+                <span>Mini GT</span>
+                <span className="h-1 w-1 rounded-full bg-white/40" />
+                <span>Tomica</span>
+                <span className="h-1 w-1 rounded-full bg-white/40" />
+                <span>Ferrari</span>
+                <span className="h-1 w-1 rounded-full bg-white/40" />
+                <span>Red Bull</span>
               </div>
-              <Reveal>
-                <SectionHeading
-                  eyebrow="TRUSTED BRANDS & RACING PARTNERS"
-                  title="Premium manufacturers, race teams, and collectibles"
-                  desc="A curated grid across MJX HyperGo, Mini GT, Pop Race, Tomica, Bburago and iconic teams like Ferrari, Red Bull, McLaren, Mercedes, Audi, BMW, and Lamborghini."
-                />
-              </Reveal>
-              <Reveal delay={0.1}>
-                <div className="mt-6 grid max-w-md grid-cols-2 gap-3 text-xs text-white/75">
-                  <div className="sp-glass sp-glow-hover rounded-2xl px-4 py-3">
-                    <div className="font-mono text-lg font-semibold tracking-[0.18em] text-white">
-                      {brands.filter((b) => b.kind === "collectible").length}
-                    </div>
-                    <div className="mt-1 text-[11px] font-semibold tracking-[0.22em] text-white/55">
-                      COLLECTIBLE LINES
-                    </div>
+              <div className="grid grid-cols-2 gap-3 text-xs text-white/75">
+                <div className="sp-glass sp-glow-hover rounded-2xl px-4 py-3">
+                  <div className="font-mono text-lg font-semibold tracking-[0.18em] text-white">
+                    {brands.filter((b) => b.kind === "collectible").length}
                   </div>
-                  <div className="sp-glass sp-glow-hover rounded-2xl px-4 py-3">
-                    <div className="font-mono text-lg font-semibold tracking-[0.18em] text-white">
-                      {brands.filter((b) => b.kind !== "collectible").length}
-                    </div>
-                    <div className="mt-1 text-[11px] font-semibold tracking-[0.22em] text-white/55">
-                      TEAMS & OEMS
-                    </div>
+                  <div className="mt-1 text-[11px] font-semibold tracking-[0.22em] text-white/55">
+                    COLLECTIBLE LINES
                   </div>
                 </div>
-              </Reveal>
+                <div className="sp-glass sp-glow-hover rounded-2xl px-4 py-3">
+                  <div className="font-mono text-lg font-semibold tracking-[0.18em] text-white">
+                    {brands.filter((b) => b.kind !== "collectible").length}
+                  </div>
+                  <div className="mt-1 text-[11px] font-semibold tracking-[0.22em] text-white/55">
+                    TEAMS & OEMS
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="space-y-10">
-              <Reveal delay={0.08}>
-                <BrandMarquee items={brands} />
-              </Reveal>
-              <Reveal delay={0.14}>
-                <BrandGrid items={brands} />
-              </Reveal>
-            </div>
+          </Reveal>
+
+          <div className="mt-10 space-y-8">
+            <Reveal delay={0.06}>
+              <BrandMarquee items={brands} />
+            </Reveal>
+            <Reveal delay={0.12}>
+              <BrandGrid items={brands} />
+            </Reveal>
           </div>
         </div>
       </section>

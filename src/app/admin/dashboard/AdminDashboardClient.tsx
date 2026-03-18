@@ -29,6 +29,14 @@ type CafeItem = {
   category: string;
 };
 
+type Testimonial = {
+  id: string;
+  name: string;
+  role: string;
+  quote: string;
+  avatarUrl: string | null;
+};
+
 function SectionShell({
   title,
   children,
@@ -50,6 +58,7 @@ export function AdminDashboardClient() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
   const [cafeItems, setCafeItems] = useState<CafeItem[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,6 +79,15 @@ export function AdminDashboardClient() {
     category: "General",
   });
 
+  const [testimonialDraft, setTestimonialDraft] = useState<Omit<Testimonial, "id">>({
+    name: "",
+    role: "",
+    quote: "",
+    avatarUrl: "",
+  });
+
+  const [testimonialFile, setTestimonialFile] = useState<File | null>(null);
+
   useEffect(() => {
     void loadAll();
   }, []);
@@ -79,25 +97,28 @@ export function AdminDashboardClient() {
       setLoading(true);
       setError(null);
 
-      const [bRes, sRes, cRes] = await Promise.all([
+      const [bRes, sRes, cRes, tRes] = await Promise.all([
         fetch("/api/admin/bookings"),
         fetch("/api/admin/shop-items"),
         fetch("/api/admin/cafe-items"),
+        fetch("/api/admin/testimonials"),
       ]);
 
-      if (!bRes.ok || !sRes.ok || !cRes.ok) {
+      if (!bRes.ok || !sRes.ok || !cRes.ok || !tRes.ok) {
         throw new Error("Failed to load admin data");
       }
 
-      const [bJson, sJson, cJson] = await Promise.all([
+      const [bJson, sJson, cJson, tJson] = await Promise.all([
         bRes.json(),
         sRes.json(),
         cRes.json(),
+        tRes.json(),
       ]);
 
       setBookings(bJson ?? []);
       setShopItems(sJson ?? []);
       setCafeItems(cJson ?? []);
+      setTestimonials(tJson ?? []);
     } catch (err) {
       console.error(err);
       setError("Failed to load admin data");
@@ -194,6 +215,71 @@ export function AdminDashboardClient() {
     } catch (err) {
       console.error(err);
       setError("Failed to delete cafe item");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function createTestimonial() {
+    resetFeedback();
+    if (!testimonialDraft.name.trim() || !testimonialDraft.role.trim() || !testimonialDraft.quote.trim()) {
+      setError("Fill name, role and quote for testimonial");
+      return;
+    }
+    setLoading(true);
+    try {
+      let avatarUrl: string | null = null;
+      if (testimonialFile) {
+        const fd = new FormData();
+        fd.append("file", testimonialFile);
+        const uploadRes = await fetch("/api/admin/upload-image", {
+          method: "POST",
+          body: fd,
+        });
+        if (!uploadRes.ok) {
+          throw new Error("Upload failed");
+        }
+        const uploadJson = (await uploadRes.json()) as { url: string };
+        avatarUrl = uploadJson.url;
+      }
+
+      const res = await fetch("/api/admin/testimonials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: testimonialDraft.name,
+          role: testimonialDraft.role,
+          quote: testimonialDraft.quote,
+          avatarUrl,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error("Create failed");
+      }
+      const json = (await res.json()) as Testimonial;
+      setTestimonials((prev) => [json, ...prev]);
+      setTestimonialDraft({ name: "", role: "", quote: "", avatarUrl: "" });
+      setTestimonialFile(null);
+      setSuccess("Testimonial created");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to create testimonial");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function deleteTestimonial(id: string) {
+    resetFeedback();
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/testimonials/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      setTestimonials((prev) => prev.filter((t) => t.id !== id));
+      setSuccess("Testimonial deleted");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to delete testimonial");
     } finally {
       setLoading(false);
     }
@@ -409,6 +495,111 @@ export function AdminDashboardClient() {
               </tbody>
             </table>
           )}
+        </div>
+      </SectionShell>
+
+      <SectionShell title="Testimonials / blog quotes">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)]">
+          <div className="space-y-3 text-xs text-white/80">
+            <div className="grid gap-2">
+              <input
+                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
+                placeholder="Name"
+                value={testimonialDraft.name}
+                onChange={(e) =>
+                  setTestimonialDraft((d) => ({
+                    ...d,
+                    name: e.target.value,
+                  }))
+                }
+              />
+              <input
+                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
+                placeholder="Role (e.g. F1 Fan, Esports)"
+                value={testimonialDraft.role}
+                onChange={(e) =>
+                  setTestimonialDraft((d) => ({
+                    ...d,
+                    role: e.target.value,
+                  }))
+                }
+              />
+              <textarea
+                className="min-h-[80px] rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
+                placeholder="Quote"
+                value={testimonialDraft.quote}
+                onChange={(e) =>
+                  setTestimonialDraft((d) => ({
+                    ...d,
+                    quote: e.target.value,
+                  }))
+                }
+              />
+              <input
+                type="file"
+                accept="image/*"
+                className="text-[11px] text-white/70"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] ?? null;
+                  setTestimonialFile(file);
+                }}
+              />
+            </div>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => void createTestimonial()}
+              className="mt-1 w-full rounded-xl bg-[var(--sp-red)] px-4 py-2 text-xs font-semibold tracking-[0.18em] text-white shadow-[0_18px_40px_rgba(255,43,60,0.55)] disabled:opacity-60"
+            >
+              {loading ? "Saving..." : "Add testimonial"}
+            </button>
+            <p className="text-[11px] text-white/50">
+              These quotes can power your homepage reviews section or a dedicated blog/press page.
+            </p>
+          </div>
+
+          <div className="max-h-64 space-y-2 overflow-y-auto text-xs">
+            {testimonials.map((t) => (
+              <div
+                key={t.id}
+                className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2"
+              >
+                <div className="flex items-start gap-2">
+                  {t.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={t.avatarUrl}
+                      alt={t.name}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-white/10" />
+                  )}
+                  <div>
+                    <div className="text-xs font-semibold text-white/90">{t.name}</div>
+                    <div className="text-[10px] uppercase tracking-[0.18em] text-white/55">
+                      {t.role}
+                    </div>
+                    <div className="mt-1 line-clamp-2 text-[11px] text-white/70">
+                      “{t.quote}”
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void deleteTestimonial(t.id)}
+                  className="text-[10px] text-red-300 hover:text-red-200"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+            {testimonials.length === 0 ? (
+              <div className="text-[11px] text-white/50">
+                No testimonials yet. Add a few to power your reviews/blog sections.
+              </div>
+            ) : null}
+          </div>
         </div>
       </SectionShell>
     </div>
