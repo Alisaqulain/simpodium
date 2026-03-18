@@ -28,6 +28,8 @@ export function BookingWidget() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [confirmed, setConfirmed] = useState<BookingRecord | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => setHydrated(true), []);
@@ -187,8 +189,11 @@ export function BookingWidget() {
               type="submit"
               size="lg"
               className="w-full"
-              onClick={() => {
-                if (!canBook) return;
+              disabled={!canBook || submitting}
+              onClick={async () => {
+                if (!canBook || submitting) return;
+                setError(null);
+                setSubmitting(true);
                 const rec: BookingRecord = {
                   id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
                   simulator,
@@ -199,12 +204,37 @@ export function BookingWidget() {
                   email: email.trim(),
                   createdAt: Date.now(),
                 };
-                saveBooking(rec);
-                setConfirmed(rec);
+                try {
+                  const res = await fetch("/api/bookings", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      simulator: rec.simulator,
+                      date: rec.date,
+                      time: rec.time,
+                      name: rec.name,
+                      phone: rec.phone,
+                      email: rec.email,
+                    }),
+                  });
+                  if (!res.ok) {
+                    throw new Error("Booking failed");
+                  }
+                  saveBooking(rec);
+                  setConfirmed(rec);
+                } catch (err) {
+                  console.error(err);
+                  setError("Could not confirm booking. Please try again.");
+                } finally {
+                  setSubmitting(false);
+                }
               }}
             >
-              Confirm Booking
+              {submitting ? "Confirming..." : "Confirm Booking"}
             </Button>
+            {error ? (
+              <div className="mt-2 text-xs text-red-300">{error}</div>
+            ) : null}
             <div className="mt-3 text-xs text-white/50">
               By confirming, you agree to arrive on time. Need help? Email{" "}
               <a className="text-white/70 hover:text-white" href={`mailto:${business.email}`}>

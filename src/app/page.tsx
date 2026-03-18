@@ -47,26 +47,42 @@ export default function Home() {
               </Reveal>
 
               <Reveal delay={0.08}>
-                <h1 className="text-glow-red-strong mt-6 text-4xl font-semibold tracking-[-0.02em] text-white sm:text-5xl lg:text-6xl">
-                  SIM PODIUM
-                </h1>
-              </Reveal>
-
-              <Reveal delay={0.14}>
-                <p className="text-glow mt-4 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
-                  The Ultimate Sim Racing Experience in Bangalore — cinematic
-                  lighting, pro-grade rigs, real physics, and an esports lounge
-                  vibe.
+                <p className="mt-6 text-xs font-semibold tracking-[0.28em] text-white/70">
+                  SIM PODIUM • BENGALURU
                 </p>
               </Reveal>
 
+              <Reveal delay={0.14}>
+                <h1 className="text-glow-red-strong mt-3 text-4xl font-semibold tracking-[-0.02em] text-white sm:text-5xl lg:text-[3.2rem]">
+                  FROM ZERO TO HOT LAP IN MINUTES
+                </h1>
+              </Reveal>
+
               <Reveal delay={0.18}>
+                <p className="text-glow mt-4 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
+                  Drop into a fully tuned sim racing lounge with cinematic lighting,
+                  pro-grade rigs, and a Formula 1–inspired atmosphere. Learn, practice,
+                  or host race nights—without touching a setup menu.
+                </p>
+              </Reveal>
+
+              <Reveal delay={0.22}>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <Button href="/bookings" size="lg">
-                    Book Now
+                  <Button
+                    href="/bookings"
+                    size="lg"
+                    className="relative overflow-hidden"
+                  >
+                    <span className="absolute inset-0 -z-[1] rounded-full bg-[radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.22),transparent_55%),radial-gradient(circle_at_100%_100%,rgba(255,43,60,0.85),transparent_60%)] opacity-80" />
+                    <span className="relative">Book Your Session</span>
                   </Button>
-                  <Button href="#simulators" variant="secondary" size="lg">
-                    Explore Simulators
+                  <Button
+                    href="#simulators"
+                    variant="secondary"
+                    size="lg"
+                    className="border-white/30 bg-white/5 hover:bg-white/10"
+                  >
+                    Explore Packages
                   </Button>
                 </div>
               </Reveal>
@@ -105,12 +121,22 @@ export default function Home() {
         </div>
         <div className="sp-container relative z-10">
           <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)]">
-            <div>
+            <div className="relative">
+              <div className="pointer-events-none absolute -inset-x-10 -top-10 bottom-0 -z-10 opacity-60">
+                <Image
+                  src="/Ferrari.jpeg"
+                  alt="Ferrari paddock lighting"
+                  fill
+                  sizes="50vw"
+                  className="object-cover blur-md"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/60 to-black/85" />
+              </div>
               <Reveal>
                 <SectionHeading
-                  eyebrow="BRAND PARTNERS"
-                  title="Die-cast, manufacturers, and race teams"
-                  desc="A curated lineup across MJX HyperGo, Mini GT, Pop Race, Tomica, Bburago and iconic teams like Ferrari, Red Bull, McLaren, Mercedes, Audi, BMW, and Lamborghini."
+                  eyebrow="TRUSTED BRANDS & RACING PARTNERS"
+                  title="Premium manufacturers, race teams, and collectibles"
+                  desc="A curated grid across MJX HyperGo, Mini GT, Pop Race, Tomica, Bburago and iconic teams like Ferrari, Red Bull, McLaren, Mercedes, Audi, BMW, and Lamborghini."
                 />
               </Reveal>
               <Reveal delay={0.1}>
@@ -202,7 +228,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* HOW IT WORKS — premium timeline */}
       <section className="relative py-16 sm:py-20">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <Image
@@ -218,26 +244,35 @@ export default function Home() {
           <Reveal>
             <SectionHeading
               eyebrow="HOW IT WORKS"
-              title="From zero to hot-lap in minutes"
-              desc="A premium flow designed for first-timers and pros alike."
+              title="Racer onboarding that feels like a formation lap"
+              desc="Three quick steps from walking in to chasing hot laps on your favourite circuits."
             />
           </Reveal>
-          <div className="mt-10 grid gap-4 lg:grid-cols-3">
-            <StepCard
-              n="01"
-              title="Select Simulator"
-              desc="Pick the rig style that matches your race mood."
-            />
-            <StepCard
-              n="02"
-              title="Book Your Slot"
-              desc="Choose date + time. Instant confirmation."
-            />
-            <StepCard
-              n="03"
-              title="Race Like a Pro"
-              desc="Dial in settings, chase lap times, hit the podium."
-            />
+          <div className="mt-12">
+            <div className="relative mx-auto max-w-4xl">
+              <div className="pointer-events-none absolute left-4 top-4 bottom-4 hidden w-px bg-gradient-to-b from-[rgba(255,43,60,0.65)] via-white/20 to-transparent lg:block" />
+              <div className="space-y-8 lg:space-y-10">
+                <StepCard
+                  n="01"
+                  title="Select your simulator rig"
+                  desc="Choose between motion rigs, ultra-wide setups, or multiplayer cockpits tuned for comfort and control."
+                  icon="sim"
+                  variant="primary"
+                />
+                <StepCard
+                  n="02"
+                  title="Lock your slot"
+                  desc="Pick date and time, confirm in a few taps, and get ready. No friction, no overthinking."
+                  icon="calendar"
+                />
+                <StepCard
+                  n="03"
+                  title="Chase podium laps"
+                  desc="Dial in assists, push for personal bests, and relive your best sectors with friends."
+                  icon="trophy"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -262,44 +297,55 @@ export default function Home() {
               desc="Quick sessions, deep practice, group battles, and tournament nights."
             />
           </Reveal>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {packages.map((p) => (
-              <Reveal key={p.name}>
-                <div className="sp-glass sp-glow-hover overflow-hidden p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="text-sm font-semibold tracking-wide text-white/90">
-                        {p.name}
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {packages.map((p) => {
+              const isPopular = p.accent === "primary";
+              return (
+                <Reveal key={p.name}>
+                  <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.75)] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.75)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_45px_rgba(255,43,60,0.55)]">
+                    {isPopular && (
+                      <div className="absolute right-4 top-4 rounded-full bg-[rgba(255,43,60,0.18)] px-3 py-1 text-[10px] font-semibold tracking-[0.22em] text-white/80 backdrop-blur">
+                        POPULAR
                       </div>
-                      <div className="mt-1 text-xs text-white/60">{p.note}</div>
-                    </div>
-                    <div className="text-glow-red font-mono text-lg font-semibold tracking-[0.14em] text-white">
-                      {p.price}
-                    </div>
-                  </div>
-                  <div className="mt-4 space-y-2 text-sm text-white/70">
-                    {p.features.map((f) => (
-                      <div key={f} className="flex items-start gap-2">
-                        <span
-                          className="mt-2 h-1.5 w-1.5 rounded-full"
-                          style={{ background: "var(--sp-red)" }}
-                        />
-                        <span>{f}</span>
+                    )}
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-xs font-semibold tracking-[0.22em] text-white/50">
+                          SIM PACKAGE
+                        </div>
+                        <div className="mt-2 text-sm font-semibold tracking-wide text-white/90">
+                          {p.name}
+                        </div>
+                        <div className="mt-1 text-xs text-white/60">{p.note}</div>
                       </div>
-                    ))}
+                      <div className="text-glow-red font-mono text-lg font-semibold tracking-[0.18em] text-white">
+                        {p.price}
+                      </div>
+                    </div>
+                    <div className="mt-4 space-y-2 text-sm text-white/70">
+                      {p.features.map((f) => (
+                        <div key={f} className="flex items-start gap-2">
+                          <span
+                            className="mt-2 h-1.5 w-1.5 rounded-full"
+                            style={{ background: "var(--sp-red)" }}
+                          />
+                          <span>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-6">
+                      <Button
+                        href="/bookings"
+                        variant={isPopular ? "primary" : "secondary"}
+                        className="w-full transition-transform duration-300 group-hover:-translate-y-[1px]"
+                      >
+                        Book {p.name} <ArrowRight size={16} />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="mt-6">
-                    <Button
-                      href="/bookings"
-                      variant={p.accent === "primary" ? "primary" : "secondary"}
-                      className="w-full"
-                    >
-                      Book {p.name} <ArrowRight size={16} />
-                    </Button>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
+                </Reveal>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -319,30 +365,49 @@ export default function Home() {
         <div className="sp-container relative z-10">
           <Reveal>
             <SectionHeading
-              eyebrow="CAFE"
-              title="Fuel for the next lap"
-              desc="Coffee, cold drinks, snacks, burgers, and pizza—served in a lounge vibe."
+              eyebrow="CAFE & LOUNGE"
+              title="Fuel like a night race paddock"
+              desc="Neon-lit cafe with coffee, cold drinks, snacks, burgers, and pizza—curated for long practice stints and post-race debriefs."
             />
           </Reveal>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {cafeItems.map((i) => (
               <Reveal key={i.name}>
-                <div className="sp-glass sp-glow-hover p-5">
-                  <div className="text-sm font-semibold tracking-wide text-white/90">
-                    {i.name}
+                <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[rgba(15,23,42,0.85)] via-[rgba(15,23,42,0.7)] to-[rgba(255,43,60,0.15)] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_45px_rgba(255,43,60,0.45)]">
+                  <div className="pointer-events-none absolute inset-0 opacity-35">
+                    <div className="h-full w-full bg-[radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.18),transparent_52%),radial-gradient(circle_at_100%_100%,rgba(255,43,60,0.6),transparent_55%)]" />
                   </div>
-                  <div className="mt-2 text-sm text-white/70">{i.desc}</div>
-                  <div className="mt-4 font-mono text-sm tracking-[0.18em] text-white/80">
-                    {i.price}
+                  <div className="relative">
+                    <div className="text-xs font-semibold tracking-[0.22em] text-white/55">
+                      LOUNGE MENU
+                    </div>
+                    <div className="mt-2 flex items-center justify-between gap-3">
+                      <div className="text-sm font-semibold tracking-wide text-white/90">
+                        {i.name}
+                      </div>
+                      <div className="font-mono text-xs tracking-[0.18em] text-white/80">
+                        {i.price}
+                      </div>
+                    </div>
+                    <div className="mt-2 text-sm text-white/75">{i.desc}</div>
                   </div>
                 </div>
               </Reveal>
             ))}
           </div>
           <Reveal>
-            <div className="mt-8">
-              <Button href="/cafe" variant="secondary" size="lg">
-                Explore Cafe Menu <ArrowRight size={16} />
+            <div className="mt-10">
+              <Button
+                href="/cafe"
+                variant="secondary"
+                size="lg"
+                className="relative overflow-hidden"
+              >
+                <span className="absolute inset-0 -z-[1] bg-[radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.16),transparent_55%),radial-gradient(circle_at_100%_0%,rgba(255,43,60,0.55),transparent_55%)] opacity-80" />
+                <span className="relative flex items-center gap-2">
+                  Explore Full Menu
+                  <ArrowRight size={16} />
+                </span>
               </Button>
             </div>
           </Reveal>
@@ -365,26 +430,34 @@ export default function Home() {
           <Reveal>
             <SectionHeading
               eyebrow="REVIEWS"
-              title="What racers say"
-              desc="Real reactions from our sim racing community."
+              title="Racers on the SIM PODIUM experience"
+              desc="Snapshots from F1 fans, casual drivers, and esports grinders who turned their first session into a habit."
             />
           </Reveal>
-          <div className="mt-10 grid gap-4 lg:grid-cols-3">
-            {testimonials.map((t) => (
-              <Reveal key={t.name}>
-                <div className="sp-glass sp-glow-hover p-6">
-                  <p className="text-sm leading-7 text-white/75">“{t.quote}”</p>
-                  <div className="mt-5 flex items-center justify-between gap-3">
-                    <div className="text-sm font-semibold tracking-wide text-white/90">
-                      {t.name}
+          <div className="mt-10">
+            <div className="flex gap-5 overflow-x-auto pb-3 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {testimonials.map((t) => (
+                <Reveal key={t.name}>
+                  <div className="min-w-[260px] max-w-sm flex-1 rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.85)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.8)] backdrop-blur-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.6),transparent_55%),radial-gradient(circle_at_70%_80%,rgba(255,43,60,0.9),transparent_55%)]" />
+                      <div>
+                        <div className="text-sm font-semibold tracking-wide text-white/90">
+                          {t.name}
+                        </div>
+                        <div className="text-[11px] font-semibold tracking-[0.22em] text-white/55">
+                          {t.role.toUpperCase()}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-xs font-semibold tracking-[0.22em] text-white/55">
-                      {t.role.toUpperCase()}
+                    <div className="mt-4 text-xs text-[rgba(255,190,92,0.95)]">
+                      {"★★★★★"}
                     </div>
+                    <p className="mt-3 text-sm leading-7 text-white/75">“{t.quote}”</p>
                   </div>
-                </div>
-              </Reveal>
-            ))}
+                </Reveal>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -416,7 +489,7 @@ export default function Home() {
                   <p className="mt-2 text-sm text-white/70">
                     Indiranagar • 100 Feet Road • HAL 2nd Stage
                   </p>
-                  <div className="mt-4">
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     <Button
                       href="/contact"
                       variant="secondary"
@@ -424,6 +497,14 @@ export default function Home() {
                       className="w-full"
                     >
                       Contact & Map
+                    </Button>
+                    <Button
+                      href={business.mapEmbed.replace("&output=embed", "")}
+                      variant="primary"
+                      size="md"
+                      className="w-full"
+                    >
+                      Get Directions
                     </Button>
                   </div>
                 </div>
@@ -491,36 +572,79 @@ function FeatureCard({ title, desc }: { title: string; desc: string }) {
   );
 }
 
+type StepIcon = "sim" | "calendar" | "trophy" | "default";
+
+function StepIconBadge({ icon }: { icon: StepIcon }) {
+  if (icon === "calendar") {
+    return (
+      <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/80 shadow-[0_0_25px_rgba(255,43,60,0.35)]">
+        <span className="text-[11px] font-semibold tracking-[0.16em]">CAL</span>
+      </div>
+    );
+  }
+  if (icon === "trophy") {
+    return (
+      <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.8),transparent_55%),radial-gradient(circle_at_70%_80%,rgba(255,215,0,0.9),transparent_55%)] text-[11px] font-semibold tracking-[0.16em] text-black shadow-[0_0_30px_rgba(255,215,0,0.65)]">
+        WIN
+      </div>
+    );
+  }
+  if (icon === "sim") {
+    return (
+      <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.75),transparent_55%),radial-gradient(circle_at_70%_80%,rgba(255,43,60,0.9),transparent_55%)] text-[11px] font-semibold tracking-[0.16em] text-black shadow-[0_0_30px_rgba(255,43,60,0.65)]">
+        SIM
+      </div>
+    );
+  }
+  return (
+    <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-[11px] font-semibold tracking-[0.16em] text-white/80">
+      STEP
+    </div>
+  );
+}
+
 function StepCard({
   n,
   title,
   desc,
+  icon = "default",
+  variant = "default",
 }: {
   n: string;
   title: string;
   desc: string;
+  icon?: StepIcon;
+  variant?: "default" | "primary";
 }) {
   return (
     <Reveal>
-      <div className="sp-glass sp-glow-hover overflow-hidden p-6">
-        <div className="flex items-center justify-between gap-3">
-          <div className="font-mono text-sm tracking-[0.22em] text-white/60">
+      <div className="relative grid gap-4 rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.8)] p-6 shadow-[0_20px_70px_rgba(0,0,0,0.85)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_45px_rgba(255,43,60,0.55)] lg:grid-cols-[auto,1fr]">
+        <div className="relative flex flex-col items-center gap-3">
+          <div className="font-mono text-xs tracking-[0.22em] text-white/60">
             {n}
           </div>
-          <div className="h-[2px] flex-1 rounded-full bg-white/10" aria-hidden />
-          <div
-            className="h-2 w-2 rounded-full"
-            style={{
-              background: "var(--sp-red)",
-              boxShadow: "0 0 18px rgba(255,43,60,0.45)",
-            }}
-            aria-hidden
-          />
+          <StepIconBadge icon={icon} />
+          <div className="hidden flex-1 lg:block">
+            <div className="mx-auto h-full w-px bg-gradient-to-b from-[rgba(255,43,60,0.75)] via-white/20 to-transparent" />
+          </div>
         </div>
-        <div className="mt-4 text-base font-semibold tracking-wide text-white/90">
-          {title}
+        <div>
+          <div className="text-sm font-semibold tracking-wide text-white/90">
+            {title}
+          </div>
+          <div className="mt-2 text-sm leading-7 text-white/70">{desc}</div>
+          {variant === "primary" && (
+            <div className="mt-4 h-[2px] w-full rounded-full bg-white/10">
+              <div
+                className="h-full w-2/3 rounded-full"
+                style={{
+                  background:
+                    "linear-gradient(90deg, rgba(255,43,60,0.0), rgba(255,43,60,0.95))",
+                }}
+              />
+            </div>
+          )}
         </div>
-        <div className="mt-2 text-sm leading-7 text-white/70">{desc}</div>
       </div>
     </Reveal>
   );
