@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { ObjectId } from "mongodb";
 import { connectToDatabase } from "@/lib/mongodb";
 import { verifyAdminToken } from "@/lib/admin-auth";
-import { ObjectId } from "mongodb";
 
 function requireAdmin() {
   const token = cookies().get("sp_admin")?.value;
@@ -20,20 +20,22 @@ export async function GET() {
   }
 
   const db = await connectToDatabase();
-  const items = await db.collection("shop_items").find({}).sort({ createdAt: -1 }).toArray();
+  const docs = await db
+    .collection("race_modes")
+    .find({})
+    .sort({ createdAt: -1 })
+    .limit(200)
+    .toArray();
 
   return NextResponse.json(
-    items.map((i) => ({
-      id: i._id.toString(),
-      name: i.name,
-      price: i.price,
-      desc: i.desc,
-      img: i.img,
-      featured: !!i.featured,
-      mrp: i.mrp ?? null,
-      salePrice: i.salePrice ?? null,
-      points: typeof i.points === "number" ? i.points : null,
-      createdAt: i.createdAt ?? null,
+    docs.map((d) => ({
+      id: d._id.toString(),
+      name: d.name,
+      price: d.price,
+      note: d.note ?? "",
+      points: typeof d.points === "number" ? d.points : null,
+      accent: d.accent === "primary" || d.accent === "secondary" ? d.accent : "default",
+      createdAt: d.createdAt ?? null,
     })),
   );
 }
@@ -45,36 +47,24 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json().catch(() => null)) as
-    | {
-        name?: string;
-        price?: string;
-        desc?: string;
-        img?: string;
-        featured?: boolean;
-        mrp?: string | null;
-        salePrice?: string | null;
-        points?: number | null;
-      }
+    | { name?: string; price?: string; note?: string; points?: number | null; accent?: string }
     | null;
 
-  if (!body || !body.name || !body.price || !body.desc || !body.img) {
+  if (!body || !body.name || !body.price) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
   const doc = {
     name: body.name.trim(),
     price: body.price.trim(),
-    desc: body.desc.trim(),
-    img: body.img.trim(),
-    featured: !!body.featured,
-    mrp: body.mrp?.trim() || null,
-    salePrice: body.salePrice?.trim() || null,
+    note: (body.note ?? "").trim(),
     points: typeof body.points === "number" ? body.points : null,
+    accent: body.accent === "primary" || body.accent === "secondary" ? body.accent : "default",
     createdAt: new Date(),
   };
 
   const db = await connectToDatabase();
-  const result = await db.collection("shop_items").insertOne(doc);
+  const result = await db.collection("race_modes").insertOne(doc);
 
   return NextResponse.json({ id: result.insertedId.toString(), ...doc }, { status: 201 });
 }

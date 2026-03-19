@@ -4,6 +4,14 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { cafeItems, business } from "@/data/content";
 
+type CafeItemRecord = {
+  id: string;
+  name: string;
+  price: string;
+  desc: string;
+  category: string;
+};
+
 export const metadata = {
   title: "Cafe",
   description:
@@ -52,7 +60,33 @@ const categories = [
   },
 ] as const;
 
-export default function CafePage() {
+async function getCafeItems(): Promise<CafeItemRecord[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/cafe-items`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) {
+      return [];
+    }
+    const json = (await res.json()) as CafeItemRecord[];
+    return json;
+  } catch {
+    return [];
+  }
+}
+
+export default async function CafePage() {
+  const liveItems = await getCafeItems();
+  const mergedCafeItems =
+    liveItems.length > 0
+      ? liveItems
+      : cafeItems.map((i) => ({
+          id: i.name,
+          name: i.name,
+          price: i.price,
+          desc: i.desc,
+          category: "General",
+        }));
   return (
     <div className="sp-container pb-20">
       <section className="relative overflow-hidden py-10 sm:py-14">
@@ -77,7 +111,7 @@ export default function CafePage() {
             <div className="lg:col-span-7">
               <div className="sp-glass sp-glow-hover overflow-hidden p-6">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {cafeItems.map((i) => (
+                  {mergedCafeItems.map((i) => (
                     <div
                       key={i.name}
                       className="rounded-2xl border border-white/10 bg-white/5 p-5"

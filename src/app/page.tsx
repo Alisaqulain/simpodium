@@ -6,20 +6,36 @@ import { ParticleField } from "@/components/effects/ParticleField";
 import { HeroVideo } from "@/components/site/HeroVideo";
 import { HeroGamingSlider } from "@/components/site/HeroGamingSlider";
 import { GallerySlider } from "@/components/ui/GallerySlider";
-import { BrandMarquee } from "@/components/ui/BrandMarquee";
-import { BrandGrid } from "@/components/site/BrandGrid";
-import {
-  business,
-  cafeItems,
-  experienceCards,
-  gallery,
-  packages,
-  testimonials,
-} from "@/data/content";
-import { brands } from "@/data/brands";
+import { business, cafeItems, experienceCards, gallery, testimonials } from "@/data/content";
 import { ArrowRight } from "lucide-react";
 
-export default function Home() {
+type RaceMode = {
+  id: string;
+  name: string;
+  price: string;
+  note: string;
+  points: number | null;
+  accent: "primary" | "secondary" | "default";
+};
+
+async function getRaceModes(): Promise<RaceMode[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/race-modes`, {
+      // Revalidate periodically so admin edits show up without a full redeploy
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) {
+      return [];
+    }
+    const json = (await res.json()) as RaceMode[];
+    return json;
+  } catch {
+    return [];
+  }
+}
+
+export default async function Home() {
+  const raceModes = await getRaceModes();
   return (
     <div>
       {/* HERO — background video, no 3D wheel; gaming cafe vibe */}
@@ -30,9 +46,9 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-0 z-[1]">
           <ParticleField className="h-full w-full opacity-70" />
         </div>
-        <div className="sp-container relative z-10 py-16 sm:py-20 lg:py-28">
-          <div className="grid items-center gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-7">
+        <div className="sp-container relative z-10 py-14 sm:py-16 lg:py-24">
+          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
+            <div className="lg:col-span-7 lg:order-1 order-2">
               <Reveal>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold tracking-[0.26em] text-white/80 backdrop-blur">
                   <span
@@ -97,7 +113,7 @@ export default function Home() {
               </Reveal>
             </div>
 
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-5 lg:order-2 order-1 mb-6 lg:mb-0">
               <Reveal delay={0.12}>
                 <HeroGamingSlider />
               </Reveal>
@@ -106,75 +122,169 @@ export default function Home() {
         </div>
       </section>
 
-      {/* BRANDS / SEGMENTS */}
-      <section className="relative py-16 sm:py-20">
+      {/* RC INDOOR RACING */}
+      <section className="relative py-14 sm:py-16">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <Image
-            src="/Ferrari.jpeg"
-            alt="Premium manufacturer grid"
+            src="/Rc-track.jpg"
+            alt="Indoor RC racing track"
             fill
-            priority={false}
-            className="object-cover opacity-40 blur-sm"
+            className="object-cover opacity-30 blur-sm"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/88 via-black/94 to-black/98" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/92 to-black/98" />
         </div>
         <div className="sp-container relative z-10">
           <Reveal>
             <SectionHeading
-              eyebrow="TRUSTED BRANDS & RACING PARTNERS"
-              title="Premium manufacturers, race teams, and collectibles"
-              desc="A curated grid across MJX HyperGo, Mini GT, Pop Race, Tomica, Bburago and iconic teams like Ferrari, Red Bull, McLaren, Mercedes, Audi, BMW, and Lamborghini."
+              eyebrow="RC INDOOR RACING"
+              title="Small-scale cars. Full-scale adrenaline."
+              desc="An indoor RC arena for quick races, friendly battles, and surprisingly technical driving."
+            />
+          </Reveal>
+          <Reveal delay={0.08}>
+            <div className="mt-8 grid gap-4 sm:gap-5 md:grid-cols-3">
+              <div className="sp-glass sp-glow-hover rounded-2xl p-5">
+                <div className="text-xs font-semibold tracking-[0.22em] text-white/60">
+                  INDOOR TRACK
+                </div>
+                <div className="mt-2 text-sm font-semibold tracking-wide text-white/90">
+                  Tight corners, chicanes, and sprint straights
+                </div>
+                <p className="mt-2 text-sm text-white/75">
+                  Compact layouts that reward precision, rhythm, and clean racing lines.
+                </p>
+              </div>
+              <div className="sp-glass sp-glow-hover rounded-2xl p-5">
+                <div className="text-xs font-semibold tracking-[0.22em] text-white/60">
+                  FUN + COMPETITIVE
+                </div>
+                <div className="mt-2 text-sm font-semibold tracking-wide text-white/90">
+                  Drop‑in races with friends
+                </div>
+                <p className="mt-2 text-sm text-white/75">
+                  Easy to pick up, hard to master — perfect for groups, families, and mixed‑skill
+                  squads.
+                </p>
+              </div>
+              <div className="sp-glass sp-glow-hover rounded-2xl p-5">
+                <div className="text-xs font-semibold tracking-[0.22em] text-white/60">
+                  CAR VISUALS
+                </div>
+                <div className="mt-2 text-sm font-semibold tracking-wide text-white/90">
+                  Highlight reels and photo moments
+                </div>
+                <p className="mt-2 text-sm text-white/75">
+                  Vibrant RC cars under neon lighting that look great in photos and stories.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* RACING ARENA */}
+      <section className="relative py-14 sm:py-16">
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <Image
+            src="/h2.jpg"
+            alt="Racing arena with premium simulators"
+            fill
+            priority={false}
+            className="object-cover opacity-35 blur-sm"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_0%,rgba(255,43,60,0.6),transparent_55%),radial-gradient(circle_at_90%_100%,rgba(0,0,0,0.95),rgba(0,0,0,0.98))]" />
+        </div>
+        <div className="sp-container relative z-10">
+          <Reveal>
+            <SectionHeading
+              eyebrow="RACING ARENA"
+              title="Dark, neon-lit arena for serious laps"
+              desc="High-performance rigs, live lap timing, and a competitive atmosphere tuned for pushing personal bests."
             />
           </Reveal>
 
           <Reveal delay={0.08}>
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-              <div className="inline-flex flex-wrap gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/70 backdrop-blur">
-                <span>MJX HyperGo</span>
-                <span className="h-1 w-1 rounded-full bg-white/40" />
-                <span>Mini GT</span>
-                <span className="h-1 w-1 rounded-full bg-white/40" />
-                <span>Tomica</span>
-                <span className="h-1 w-1 rounded-full bg-white/40" />
-                <span>Ferrari</span>
-                <span className="h-1 w-1 rounded-full bg-white/40" />
-                <span>Red Bull</span>
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-xs text-white/75">
-                <div className="sp-glass sp-glow-hover rounded-2xl px-4 py-3">
-                  <div className="font-mono text-lg font-semibold tracking-[0.18em] text-white">
-                    {brands.filter((b) => b.kind === "collectible").length}
-                  </div>
-                  <div className="mt-1 text-[11px] font-semibold tracking-[0.22em] text-white/55">
-                    COLLECTIBLE LINES
-                  </div>
+            <div className="mt-8 grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4">
+              <div className="sp-glass sp-glow-hover sp-neon-border relative overflow-hidden rounded-2xl p-5">
+                <div className="absolute inset-0 opacity-40">
+                  <div className="h-full w-full bg-[radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.18),transparent_55%),radial-gradient(circle_at_100%_100%,rgba(255,43,60,0.9),transparent_60%)]" />
                 </div>
-                <div className="sp-glass sp-glow-hover rounded-2xl px-4 py-3">
-                  <div className="font-mono text-lg font-semibold tracking-[0.18em] text-white">
-                    {brands.filter((b) => b.kind !== "collectible").length}
+                <div className="relative">
+                  <div className="text-xs font-semibold tracking-[0.22em] text-white/60">
+                    HIGH-PERFORMANCE RIGS
                   </div>
-                  <div className="mt-1 text-[11px] font-semibold tracking-[0.22em] text-white/55">
-                    TEAMS & OEMS
+                  <div className="mt-2 text-sm font-semibold tracking-wide text-white/90">
+                    Racing simulators that feel like a pit lane garage
                   </div>
+                  <p className="mt-2 text-sm text-white/75">
+                    Direct-drive wheels, load-cell pedals, and tuned seating for long stints
+                    without fatigue.
+                  </p>
+                </div>
+              </div>
+
+              <div className="sp-glass sp-glow-hover relative overflow-hidden rounded-2xl p-5">
+                <div className="absolute inset-0 opacity-40">
+                  <div className="h-full w-full bg-[radial-gradient(circle_at_100%_0%,rgba(255,43,60,0.7),transparent_55%),radial-gradient(circle_at_0%_100%,rgba(0,0,0,0.9),transparent_60%)]" />
+                </div>
+                <div className="relative">
+                  <div className="text-xs font-semibold tracking-[0.22em] text-white/60">
+                    COMPETITIVE LAP TIMING
+                  </div>
+                  <div className="mt-2 text-sm font-semibold tracking-wide text-white/90">
+                    Live deltas and session history
+                  </div>
+                  <p className="mt-2 text-sm text-white/75">
+                    Chase purple sectors with on-screen timing, leaderboards, and session
+                    breakdowns.
+                  </p>
+                </div>
+              </div>
+
+              <div className="sp-glass sp-glow-hover relative overflow-hidden rounded-2xl p-5">
+                <div className="absolute inset-0 opacity-40">
+                  <div className="h-full w-full bg-[radial-gradient(circle_at_10%_100%,rgba(255,255,255,0.15),transparent_55%),radial-gradient(circle_at_90%_0%,rgba(255,43,60,0.75),transparent_55%)]" />
+                </div>
+                <div className="relative">
+                  <div className="text-xs font-semibold tracking-[0.22em] text-white/60">
+                    REALISTIC RACING ENVIRONMENT
+                  </div>
+                  <div className="mt-2 text-sm font-semibold tracking-wide text-white/90">
+                    Night-race paddock vibes
+                  </div>
+                  <p className="mt-2 text-sm text-white/75">
+                    Dark lounge, track-inspired lighting, and focused audio tuned around
+                    the rigs—not the room.
+                  </p>
+                </div>
+              </div>
+
+              <div className="sp-glass sp-glow-hover relative overflow-hidden rounded-2xl p-5">
+                <div className="absolute inset-0 opacity-40">
+                  <div className="h-full w-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,43,60,0.7),transparent_55%),radial-gradient(circle_at_50%_100%,rgba(0,0,0,0.95),transparent_60%)]" />
+                </div>
+                <div className="relative">
+                  <div className="text-xs font-semibold tracking-[0.22em] text-white/60">
+                    MULTIPLAYER RACING
+                  </div>
+                  <div className="mt-2 text-sm font-semibold tracking-wide text-white/90">
+                    Side‑by‑side battles with friends
+                  </div>
+                  <p className="mt-2 text-sm text-white/75">
+                    Jump into shared lobbies, grid up together, and relive photo‑finish
+                    moments from multiple angles.
+                  </p>
                 </div>
               </div>
             </div>
           </Reveal>
-
-          <div className="mt-10 space-y-8">
-            <Reveal delay={0.06}>
-              <BrandMarquee items={brands} />
-            </Reveal>
-            <Reveal delay={0.12}>
-              <BrandGrid items={brands} />
-            </Reveal>
-          </div>
         </div>
       </section>
 
       {/* EXPERIENCE */}
-      <section id="simulators" className="relative py-16 sm:py-20">
+      <section id="simulators" className="relative py-14 sm:py-16">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <Image
             src="/h2.jpg"
@@ -190,11 +300,17 @@ export default function Home() {
             <SectionHeading
               eyebrow="EXPERIENCE"
               title="The Future of Racing Simulation"
-              desc="Built like an esports arena, tuned like a race garage—every detail engineered for immersion."
+              desc="Static rigs for consistency. Motion rigs for feel. An esports arena tuned like a race garage—every detail engineered for immersion."
             />
           </Reveal>
+          <Reveal delay={0.06}>
+            <div className="mt-4 flex flex-wrap gap-2 text-[11px] text-white/70">
+              <MiniChip>STATIC SIMULATORS • PRECISION LAPS</MiniChip>
+              <MiniChip>MOTION SIMULATORS • FULL-BODY FEEL</MiniChip>
+            </div>
+          </Reveal>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             {experienceCards.map((c) => (
               <FeatureCard key={c.title} title={c.title} desc={c.desc} />
             ))}
@@ -203,7 +319,7 @@ export default function Home() {
       </section>
 
       {/* GALLERY */}
-      <section className="relative py-16 sm:py-20">
+      <section className="relative py-14 sm:py-16">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <Image
             src="/h3.jpeg"
@@ -223,14 +339,14 @@ export default function Home() {
             />
           </Reveal>
 
-          <div className="mt-10">
+          <div className="mt-8">
             <GallerySlider items={gallery as unknown as { title: string; img: string }[]} />
           </div>
         </div>
       </section>
 
       {/* HOW IT WORKS — premium timeline */}
-      <section className="relative py-16 sm:py-20">
+      <section className="relative py-14 sm:py-16">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <Image
             src="/h1.jpg"
@@ -279,7 +395,7 @@ export default function Home() {
       </section>
 
       {/* PACKAGES */}
-      <section className="relative py-16 sm:py-20">
+      <section className="relative py-14 sm:py-16">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <Image
             src="/h4.jpeg"
@@ -295,14 +411,14 @@ export default function Home() {
             <SectionHeading
               eyebrow="PACKAGES"
               title="Choose your race mode"
-              desc="Quick sessions, deep practice, group battles, and tournament nights."
+              desc="Fuel like a night race paddock — quick sessions, deep practice, and multiplayer battles tuned for peak focus."
             />
           </Reveal>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {packages.map((p) => {
+          <div className="mt-8 grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {(raceModes.length > 0 ? raceModes : []).map((p) => {
               const isPopular = p.accent === "primary";
               return (
-                <Reveal key={p.name}>
+                <Reveal key={p.id ?? p.name}>
                   <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.75)] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.75)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_45px_rgba(255,43,60,0.55)]">
                     {isPopular && (
                       <div className="absolute right-4 top-4 rounded-full bg-[rgba(255,43,60,0.18)] px-3 py-1 text-[10px] font-semibold tracking-[0.22em] text-white/80 backdrop-blur">
@@ -314,8 +430,15 @@ export default function Home() {
                         <div className="text-xs font-semibold tracking-[0.22em] text-white/50">
                           SIM PACKAGE
                         </div>
-                        <div className="mt-2 text-sm font-semibold tracking-wide text-white/90">
-                          {p.name}
+                        <div className="mt-2 flex items-center gap-2">
+                          <div className="text-sm font-semibold tracking-wide text-white/90">
+                            {p.name}
+                          </div>
+                          {typeof p.points === "number" ? (
+                            <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] font-mono tracking-[0.18em] text-white/70">
+                              {p.points.toString().padStart(2, "0")} PTS
+                            </span>
+                          ) : null}
                         </div>
                         <div className="mt-1 text-xs text-white/60">{p.note}</div>
                       </div>
@@ -323,17 +446,9 @@ export default function Home() {
                         {p.price}
                       </div>
                     </div>
-                    <div className="mt-4 space-y-2 text-sm text-white/70">
-                      {p.features.map((f) => (
-                        <div key={f} className="flex items-start gap-2">
-                          <span
-                            className="mt-2 h-1.5 w-1.5 rounded-full"
-                            style={{ background: "var(--sp-red)" }}
-                          />
-                          <span>{f}</span>
-                        </div>
-                      ))}
-                    </div>
+                    {p.note ? (
+                      <div className="mt-4 text-sm text-white/70">{p.note}</div>
+                    ) : null}
                     <div className="mt-6">
                       <Button
                         href="/bookings"
@@ -352,7 +467,7 @@ export default function Home() {
       </section>
 
       {/* CAFE PREVIEW */}
-      <section className="relative py-16 sm:py-20">
+      <section className="relative py-14 sm:py-16">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <Image
             src="/Cafe-bg.jpg"
@@ -371,7 +486,7 @@ export default function Home() {
               desc="Neon-lit cafe with coffee, cold drinks, snacks, burgers, and pizza—curated for long practice stints and post-race debriefs."
             />
           </Reveal>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4">
             {cafeItems.map((i) => (
               <Reveal key={i.name}>
                 <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[rgba(15,23,42,0.85)] via-[rgba(15,23,42,0.7)] to-[rgba(255,43,60,0.15)] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_45px_rgba(255,43,60,0.45)]">
@@ -416,7 +531,7 @@ export default function Home() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="relative py-16 sm:py-20">
+      <section className="relative py-14 sm:py-16">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <Image
             src="/Redbull.jpeg"

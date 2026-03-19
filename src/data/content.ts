@@ -95,13 +95,6 @@ export const packages = [
     features: ["Multiplayer slots", "Mini tournament", "Photo moments"],
     accent: "secondary",
   },
-  {
-    name: "Tournament Mode",
-    price: "Custom",
-    note: "Events • Leaderboards • Prizes",
-    features: ["Event planning", "Bracket + scoring", "Host support"],
-    accent: "primary",
-  },
 ] as const;
 
 export const cafeItems = [
