@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
+import { business } from "@/data/content";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -58,7 +59,7 @@ export function Navbar() {
         <div className="sp-container">
           <div
             className={cn(
-              "relative flex items-center justify-between gap-4 rounded-2xl border border-white/10 px-4 py-3 sm:px-5 sm:py-4",
+              "relative flex items-center justify-between gap-4 rounded-2xl border border-white/10 px-4 py-2 sm:px-5 sm:py-2.5",
               isScrolled ? "bg-[rgba(20,24,33,0.55)] backdrop-blur-xl" : "bg-transparent",
             )}
             style={{
@@ -101,6 +102,16 @@ export function Navbar() {
             </nav>
 
             <div className="flex items-center gap-3">
+              <a
+                href={`tel:${business.phone.replace(/\s/g, "")}`}
+                className={cn(
+                  "hidden rounded-xl px-3 py-2 text-sm font-semibold tracking-wide text-white/90 lg:inline-flex",
+                  "border border-white/10 bg-white/5 backdrop-blur",
+                  "transition-all duration-300 hover:-translate-y-[1px] hover:text-white hover:bg-white/10",
+                )}
+              >
+                {business.phone}
+              </a>
               <Link
                 href="/bookings"
                 className={cn(
@@ -214,6 +225,14 @@ export function Navbar() {
                     </motion.div>
                   ))}
                 </div>
+
+                <a
+                  href={`tel:${business.phone.replace(/\s/g, "")}`}
+                  onClick={() => setOpen(false)}
+                  className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold tracking-wide text-white/90 transition-colors hover:bg-white/10"
+                >
+                  {business.phone}
+                </a>
               </div>
 
               <div className="mt-10 text-center text-xs text-white/55">

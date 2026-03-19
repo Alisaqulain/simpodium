@@ -11,7 +11,7 @@ export const business = {
   addressOneLine:
     "#1133, 3rd Floor, 100 Feet Rd, HAL 2nd Stage, Indiranagar, Bengaluru, Karnataka 560038",
   email: "hello@simpodium.in",
-  phone: "+91 99999 99999",
+  phone: "+91 99000 86633",
   mapEmbed:
     "https://www.google.com/maps?q=1133%203rd%20Floor%20100%20Feet%20Rd%20HAL%202nd%20Stage%20Indiranagar%20Bengaluru%20560038&output=embed",
 };

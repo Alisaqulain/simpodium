@@ -60,8 +60,8 @@ export function Footer() {
               </div>
               <div>
                 <span className="text-white/60">Phone:</span>{" "}
-                <a className="hover:text-white" href="tel:+919999999999">
-                  +91 99999 99999
+                <a className="hover:text-white" href="tel:+919900086633">
+                  +91 99000 86633
                 </a>
               </div>
             </div>
