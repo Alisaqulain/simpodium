@@ -36,91 +36,89 @@ async function getRaceModes(): Promise<RaceMode[]> {
 
 export default async function Home() {
   const raceModes = await getRaceModes();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: business.name,
+    url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://simpodium.in",
+    telephone: business.phone,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: business.addressLines.join(", "),
+      addressLocality: "Bengaluru",
+      addressRegion: "Karnataka",
+      postalCode: "560038",
+      addressCountry: "IN",
+    },
+    areaServed: ["Bengaluru", "Indiranagar"],
+  };
   return (
     <div>
       {/* HERO — background video, no 3D wheel; gaming cafe vibe */}
-      <section className="relative min-h-[85vh] overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <HeroVideo />
-        </div>
-        <div className="pointer-events-none absolute inset-0 z-[1]">
-          <ParticleField className="h-full w-full opacity-70" />
-        </div>
-        <div className="sp-container relative z-10 py-14 sm:py-16 lg:py-24">
-          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
-            <div className="lg:col-span-7 lg:order-1 order-2">
-              <Reveal>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold tracking-[0.26em] text-white/80 backdrop-blur">
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{
-                      background: "var(--sp-red)",
-                      boxShadow: "0 0 18px rgba(255,43,60,0.55)",
-                    }}
-                  />
-                  PREMIUM SIM RACING • INDlRANAGAR
-                </div>
-              </Reveal>
+      <section className="relative min-h-[65vh] sm:min-h-[85vh] w-full overflow-x-hidden">
+  <div className="absolute inset-0 z-0">
+    <HeroVideo />
+  </div>
 
-              <Reveal delay={0.08}>
-                <p className="mt-6 text-xs font-semibold tracking-[0.28em] text-white/70">
-                  SIM PODIUM • BENGALURU
-                </p>
-              </Reveal>
+  <div className="pointer-events-none absolute inset-0 z-[1] hidden sm:block">
+    <ParticleField className="h-full w-full opacity-70" />
+  </div>
 
-              <Reveal delay={0.14}>
-                <h1 className="text-glow-red-strong mt-3 text-4xl font-semibold tracking-[-0.02em] text-white sm:text-5xl lg:text-[3.2rem]">
-                  FROM ZERO TO HOT LAP IN MINUTES
-                </h1>
-              </Reveal>
+        <div className="sp-container relative z-10 py-9 sm:py-16 lg:py-24">
+          <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12 lg:gap-12">
 
-              <Reveal delay={0.18}>
-                <p className="text-glow mt-4 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
-                  Drop into a fully tuned sim racing lounge with cinematic lighting,
-                  pro-grade rigs, and a Formula 1–inspired atmosphere. Learn, practice,
-                  or host race nights—without touching a setup menu.
-                </p>
-              </Reveal>
-
-              <Reveal delay={0.22}>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <Button
-                    href="/bookings"
-                    size="lg"
-                    className="relative overflow-hidden"
-                  >
-                    <span className="absolute inset-0 -z-[1] rounded-full bg-[radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.22),transparent_55%),radial-gradient(circle_at_100%_100%,rgba(255,43,60,0.85),transparent_60%)] opacity-80" />
-                    <span className="relative">Book Your Session</span>
-                  </Button>
-                  <Button
-                    href="#simulators"
-                    variant="secondary"
-                    size="lg"
-                    className="border-white/30 bg-white/5 hover:bg-white/10"
-                  >
-                    Explore Packages
-                  </Button>
-                </div>
-              </Reveal>
-
-              <Reveal delay={0.22}>
-                <div className="mt-10 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4">
-                  <DashStat label="Rigs" value="06+" />
-                  <DashStat label="FPS" value="120+" />
-                  <DashStat label="Tracks" value="50+" />
-                  <DashStat label="Lap Timer" value="LED" />
-                </div>
-              </Reveal>
-            </div>
-
-            <div className="lg:col-span-5 lg:order-2 order-1 mb-6 lg:mb-0">
-              <Reveal delay={0.12}>
-                <HeroGamingSlider />
-              </Reveal>
-            </div>
+      {/* TEXT */}
+      <div className="lg:col-span-7 order-2 lg:order-1 text-center lg:text-left">
+        
+        <Reveal>
+          <div className="inline-flex items-center justify-center lg:justify-start gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] sm:text-xs tracking-[0.2em] text-white/80">
+            <span className="h-2 w-2 rounded-full bg-red-500 shadow-[0_0_12px_rgba(255,43,60,0.7)]" />
+            PREMIUM SIM RACING
           </div>
-        </div>
-      </section>
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <h1 className="mt-4 text-2xl sm:text-4xl lg:text-[3rem] font-semibold leading-tight text-white break-words">
+            FROM ZERO TO HOT LAP IN MINUTES
+          </h1>
+        </Reveal>
+
+        <Reveal delay={0.15}>
+          <p className="mt-4 text-sm sm:text-lg text-white/80 max-w-xl mx-auto lg:mx-0">
+            Experience pro-level racing simulators with immersive lighting,
+            real physics, and multiplayer action.
+          </p>
+        </Reveal>
+
+        <Reveal delay={0} y={0} transition={{ duration: 0.15 }}>
+          <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+            <Button href="/bookings" size="lg" className="w-full sm:w-auto">
+              Book Now
+            </Button>
+
+            <Button
+              href="#simulators"
+              variant="secondary"
+              size="lg"
+              className="w-full sm:w-auto"
+            >
+              Explore Packages
+            </Button>
+          </div>
+        </Reveal>
+
+      </div>
+
+      {/* IMAGE / SLIDER */}
+      <div className="lg:col-span-5 order-1 lg:order-2">
+        <Reveal>
+          <HeroGamingSlider />
+        </Reveal>
+      </div>
+
+    </div>
+  </div>
+</section>
 
       {/* RC INDOOR RACING */}
       <section className="relative py-14 sm:py-16">
@@ -641,6 +639,37 @@ export default async function Home() {
           </Reveal>
         </div>
       </section>
+
+      {/* SEO KEYWORD RICH COPY (for smooth conversion + rankings) */}
+      <section className="relative pb-20">
+        <div className="sp-container">
+          <div className="sp-glass sp-neon-border p-6 sm:p-8">
+            <div className="text-glow text-xl font-semibold text-white">
+              Sim Racing Experience in Indiranagar
+            </div>
+            <p className="mt-3 text-sm leading-7 text-white/70">
+              SIM PODIUM is the best sim racing experience in Bangalore — a premium racing simulator
+              gaming cafe in Indiranagar. Book an F1-inspired racing simulator lounge, enjoy
+              static & motion racing rigs, and get esports practice with multiplayer battles and
+              an arcade lounge feel.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2 text-[11px] text-white/70">
+              <span>racing simulator gaming cafe in Bangalore</span>
+              <span>F1 simulator Bangalore</span>
+              <span>sim racing arcade Bangalore</span>
+              <span>racing simulator near me</span>
+              <span>sim racing competition Bangalore</span>
+              <span>professional racing simulator</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     </div>
   );
 }

@@ -1,15 +1,27 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 export const HERO_VIDEO_SRC = "/Sim Podium Web Video_1.mp4";
 
 export function HeroVideo() {
+  const [autoPlay, setAutoPlay] = useState(true);
+
+  useEffect(() => {
+    const coarse = window.matchMedia?.("(pointer: coarse)")?.matches ?? false;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    setAutoPlay(!(coarse || reduce));
+  }, []);
+
   return (
     <>
       <video
-        autoPlay
+        autoPlay={autoPlay}
+        preload="metadata"
         muted
         loop
         playsInline
+        poster="/h2.jpg"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden
       >
@@ -29,13 +41,23 @@ export function HeroVideo() {
 
 /** Right-column card: same video in a glass frame — lounge / cafe vibe, no 3D wheel */
 export function HeroVideoCard() {
+  const [autoPlay, setAutoPlay] = useState(true);
+
+  useEffect(() => {
+    const coarse = window.matchMedia?.("(pointer: coarse)")?.matches ?? false;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    setAutoPlay(!(coarse || reduce));
+  }, []);
+
   return (
     <div className="relative h-[320px] w-full overflow-hidden rounded-[22px] border border-white/10 bg-black/20 shadow-[0_24px_60px_rgba(0,0,0,0.5),0_0_32px_rgba(255,43,60,0.15)] backdrop-blur sm:h-[380px]">
       <video
-        autoPlay
+        autoPlay={autoPlay}
+        preload="metadata"
         muted
         loop
         playsInline
+        poster="/h2.jpg"
         className="absolute inset-0 h-full w-full object-cover"
         aria-hidden
       >

@@ -52,7 +52,7 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          "fixed left-0 right-0 top-0 z-50 transition-all duration-300",
+          "fixed left-0 right-0 top-0 z-60 transition-all duration-300",
           isScrolled ? "py-3" : "py-5",
         )}
       >
@@ -150,7 +150,7 @@ export function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-50 lg:hidden"
+            className="fixed inset-0 z-40 lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

@@ -86,6 +86,19 @@ export function AdminDashboardClient() {
     img: "",
   });
   const [shopImageFile, setShopImageFile] = useState<File | null>(null);
+  const [shopImagePreviewUrl, setShopImagePreviewUrl] = useState<string | null>(null);
+  const [shopDiscountPrice, setShopDiscountPrice] = useState<string>("");
+  const [shopPointsDraft, setShopPointsDraft] = useState<string>("");
+
+  useEffect(() => {
+    if (!shopImageFile) {
+      setShopImagePreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(shopImageFile);
+    setShopImagePreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [shopImageFile]);
 
   const [cafeDraft, setCafeDraft] = useState<Omit<CafeItem, "id">>({
     name: "",
@@ -186,14 +199,24 @@ export function AdminDashboardClient() {
       const uploadJson = (await uploadRes.json()) as { url: string };
       const imgUrl = uploadJson.url;
 
+      const mrp = shopDraft.price.trim();
+      const salePriceRaw = shopDiscountPrice.trim();
+      const salePrice = salePriceRaw ? salePriceRaw : null;
+      const pointsRaw = shopPointsDraft.trim();
+      const points = pointsRaw ? Number(pointsRaw) : null;
+      const displayPrice = salePrice ?? mrp;
+
       const res = await fetch("/api/admin/shop-items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: shopDraft.name,
-          price: shopDraft.price,
+          price: displayPrice,
           desc: shopDraft.desc,
           img: imgUrl,
+          mrp,
+          salePrice,
+          points,
         }),
       });
       if (!res.ok) {
@@ -203,6 +226,8 @@ export function AdminDashboardClient() {
       setShopItems((prev) => [json, ...prev]);
       setShopDraft({ name: "", price: "", desc: "", img: "" });
       setShopImageFile(null);
+      setShopDiscountPrice("");
+      setShopPointsDraft("");
       setSuccess("Shop item created");
     } catch (err) {
       console.error(err);
@@ -561,9 +586,22 @@ export function AdminDashboardClient() {
               />
               <input
                 className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
-                placeholder="Display price (e.g. ₹7,999)"
+                placeholder="Real price (MRP) (e.g. ₹7,999)"
                 value={shopDraft.price}
                 onChange={(e) => setShopDraft((d) => ({ ...d, price: e.target.value }))}
+              />
+              <input
+                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
+                placeholder="Discount price after discount (optional)"
+                value={shopDiscountPrice}
+                onChange={(e) => setShopDiscountPrice(e.target.value)}
+              />
+              <input
+                type="number"
+                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
+                placeholder="Points (optional)"
+                value={shopPointsDraft}
+                onChange={(e) => setShopPointsDraft(e.target.value)}
               />
               <input
                 className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
@@ -580,6 +618,27 @@ export function AdminDashboardClient() {
                   setShopImageFile(file);
                 }}
               />
+              <div className="flex items-center gap-3">
+                {shopImagePreviewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={shopImagePreviewUrl}
+                    alt="Selected product"
+                    className="h-12 w-12 rounded-xl border border-white/10 bg-white/5 object-cover"
+                  />
+                ) : null}
+                {shopImageFile ? (
+                  <button
+                    type="button"
+                    className="text-[11px] text-red-300 hover:text-red-200"
+                    onClick={() => {
+                      setShopImageFile(null);
+                    }}
+                  >
+                    Remove
+                  </button>
+                ) : null}
+              </div>
             </div>
             <button
               type="button"
@@ -599,7 +658,16 @@ export function AdminDashboardClient() {
               >
                 <div>
                   <div className="text-xs font-semibold text-white/90">{i.name}</div>
-                  <div className="text-[11px] text-white/60">{i.price}</div>
+                  <div className="text-[11px] text-white/60">
+                    {i.mrp && i.salePrice && i.salePrice !== i.mrp ? (
+                      <span>
+                        <span className="mr-2 line-through text-white/40">{i.mrp}</span>
+                        <span className="text-white/70">{i.salePrice}</span>
+                      </span>
+                    ) : (
+                      i.price
+                    )}
+                  </div>
                 </div>
                 <button
                   type="button"
@@ -615,81 +683,74 @@ export function AdminDashboardClient() {
             ) : null}
           </div>
         </SectionShell>
-
-        <SectionShell title="Manage cafe">
-          <div className="space-y-3 text-xs text-white/80">
-            <div className="grid gap-2">
-              <input
-                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
-                placeholder="Name"
-                value={cafeDraft.name}
-                onChange={(e) => setCafeDraft((d) => ({ ...d, name: e.target.value }))}
-              />
-              <input
-                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
-                placeholder="Price (e.g. ₹199)"
-                value={cafeDraft.price}
-                onChange={(e) => setCafeDraft((d) => ({ ...d, price: e.target.value }))}
-              />
-              <input
-                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
-                placeholder="Short description"
-                value={cafeDraft.desc}
-                onChange={(e) => setCafeDraft((d) => ({ ...d, desc: e.target.value }))}
-              />
-              <input
-                className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
-                placeholder="Category (e.g. Coffee, Snacks)"
-                value={cafeDraft.category}
-                onChange={(e) => setCafeDraft((d) => ({ ...d, category: e.target.value }))}
-              />
-            </div>
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => void createCafeItem()}
-              className="mt-1 w-full rounded-xl bg-[var(--sp-red)] px-4 py-2 text-xs font-semibold tracking-[0.18em] text-white shadow-[0_18px_40px_rgba(255,43,60,0.55)] disabled:opacity-60"
-            >
-              {loading ? "Saving..." : "Add cafe item"}
-            </button>
-          </div>
-
-          <div className="mt-4 max-h-64 space-y-2 overflow-y-auto text-xs">
-            {cafeItems.map((i) => (
-              <div
-                key={i.id}
-                className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2"
-              >
-                <div>
-                  <div className="text-xs font-semibold text-white/90">
-                    {i.name} <span className="text-[10px] text-white/55">({i.category})</span>
-                  </div>
-                  <div className="text-[11px] text-white/60">{i.price}</div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => void deleteCafeItem(i.id)}
-                  className="text-[10px] text-red-300 hover:text-red-200"
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-            {cafeItems.length === 0 ? (
-              <div className="text-[11px] text-white/50">No cafe items yet.</div>
-            ) : null}
-          </div>
-        </SectionShell>
       </div>
       ) : null}
 
       {activeTab === "cafe" ? (
         <div className="grid gap-5 lg:grid-cols-2">
-          <SectionShell title="Manage cafe menu">
-            <p className="text-xs text-white/70">
-              These items appear on the cafe page and homepage cafe section.
-            </p>
-            {/* Reuse existing Manage cafe UI */}
+          <SectionShell title="Manage cafe">
+            <div className="space-y-3 text-xs text-white/80">
+              <div className="grid gap-2">
+                <input
+                  className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
+                  placeholder="Name"
+                  value={cafeDraft.name}
+                  onChange={(e) => setCafeDraft((d) => ({ ...d, name: e.target.value }))}
+                />
+                <input
+                  className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
+                  placeholder="Price (e.g. ₹199)"
+                  value={cafeDraft.price}
+                  onChange={(e) => setCafeDraft((d) => ({ ...d, price: e.target.value }))}
+                />
+                <input
+                  className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
+                  placeholder="Short description"
+                  value={cafeDraft.desc}
+                  onChange={(e) => setCafeDraft((d) => ({ ...d, desc: e.target.value }))}
+                />
+                <input
+                  className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
+                  placeholder="Category (e.g. Coffee, Snacks)"
+                  value={cafeDraft.category}
+                  onChange={(e) => setCafeDraft((d) => ({ ...d, category: e.target.value }))}
+                />
+              </div>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => void createCafeItem()}
+                className="mt-1 w-full rounded-xl bg-[var(--sp-red)] px-4 py-2 text-xs font-semibold tracking-[0.18em] text-white shadow-[0_18px_40px_rgba(255,43,60,0.55)] disabled:opacity-60"
+              >
+                {loading ? "Saving..." : "Add cafe item"}
+              </button>
+            </div>
+
+            <div className="mt-4 max-h-64 space-y-2 overflow-y-auto text-xs">
+              {cafeItems.map((i) => (
+                <div
+                  key={i.id}
+                  className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2"
+                >
+                  <div>
+                    <div className="text-xs font-semibold text-white/90">
+                      {i.name} <span className="text-[10px] text-white/55">({i.category})</span>
+                    </div>
+                    <div className="text-[11px] text-white/60">{i.price}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void deleteCafeItem(i.id)}
+                    className="text-[10px] text-red-300 hover:text-red-200"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+              {cafeItems.length === 0 ? (
+                <div className="text-[11px] text-white/50">No cafe items yet.</div>
+              ) : null}
+            </div>
           </SectionShell>
         </div>
       ) : null}
