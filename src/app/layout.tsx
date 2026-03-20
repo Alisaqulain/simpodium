@@ -54,6 +54,10 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: "/",
   },
+  icons: {
+    icon: "/Sim Podium final logo.png",
+    shortcut: "/Sim Podium final logo.png",
+  },
   robots: {
     index: true,
     follow: true,

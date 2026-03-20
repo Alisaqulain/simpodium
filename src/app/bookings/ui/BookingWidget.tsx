@@ -98,6 +98,11 @@ export function BookingWidget() {
             <div className="mb-3 text-xs font-semibold tracking-[0.22em] text-white/55">
               TIME SLOTS
             </div>
+            <p className="mb-4 text-[11px] leading-6 text-white/55">
+              Last slot ends at <span className="text-white/80">21:00</span>. Weekdays close at{" "}
+              <span className="text-white/80">23:00</span>. Friday & Saturday close at{" "}
+              <span className="text-white/80">01:00</span>.
+            </p>
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
               {availableSlots.map((s) => {
                 const selected = time === s.time;
