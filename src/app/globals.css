@@ -200,3 +200,25 @@ body::after {
     transform: translateX(-50%);
   }
 }
+
+/* Premium WebKit scrollbar (used by time slots scroller) */
+.sp-time-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,43,60,0.55) rgba(255,255,255,0.06);
+}
+
+.sp-time-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.sp-time-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+}
+.sp-time-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 43, 60, 0.45);
+  border: 2px solid rgba(20, 24, 33, 0.7);
+  border-radius: 999px;
+}
+.sp-time-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 43, 60, 0.7);
+}

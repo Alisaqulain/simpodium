@@ -170,7 +170,7 @@ export function BookingWidget() {
               Weekdays close by <span className="text-white/80">11:00 PM</span>. Friday & Saturday close by{" "}
               <span className="text-white/80">1:00 AM</span>.
             </p>
-            <div className="max-h-72 overflow-y-auto pr-1">
+            <div className="sp-time-scroll max-h-72 overflow-y-auto pr-1">
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 {availableSlots.map((s) => {
                   const selected = time === s.time && slotDate === s.slotDate;
@@ -186,9 +186,9 @@ export function BookingWidget() {
                     className={cn(
                       "rounded-2xl border px-3 py-3 text-sm font-semibold tracking-wide transition-all duration-300",
                       s.available
-                        ? "border-white/10 bg-white/5 text-white/85 hover:bg-white/10"
+                        ? "border-white/10 bg-white/5 text-white/85 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(255,43,60,0.18)]"
                         : "border-white/5 bg-white/3 text-white/35",
-                      selected && s.available && "sp-neon-border",
+                      selected && s.available && "sp-neon-border shadow-[0_0_36px_rgba(255,43,60,0.25)]",
                     )}
                     style={
                       selected && s.available
