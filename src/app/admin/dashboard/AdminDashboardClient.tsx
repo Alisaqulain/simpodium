@@ -362,6 +362,16 @@ export function AdminDashboardClient() {
     }
   }
 
+  function formatTime12h(time24: string) {
+    const [hhStr, mmStr] = time24.split(":");
+    const hh = Number(hhStr);
+    const mm = Number(mmStr);
+    const ampm = hh >= 12 ? "PM" : "AM";
+    const displayH = hh % 12 === 0 ? 12 : hh % 12;
+    const displayM = String(mm).padStart(2, "0");
+    return `${displayH}:${displayM} ${ampm}`;
+  }
+
   async function createRaceMode() {
     resetFeedback();
     if (!raceModeDraft.name.trim() || !raceModeDraft.price.trim()) {
@@ -945,7 +955,7 @@ export function AdminDashboardClient() {
                 {bookings.map((b) => (
                   <tr key={b.id} className="rounded-xl bg-white/5">
                     <td className="rounded-l-xl px-2 py-1">
-                      {b.date} • {b.time}
+                      {b.date} • {formatTime12h(b.time)}
                     </td>
                     <td className="px-2 py-1">{b.simulator}</td>
                     <td className="px-2 py-1">{b.name}</td>

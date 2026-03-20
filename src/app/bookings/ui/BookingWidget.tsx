@@ -18,12 +18,23 @@ function todayISO() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+function formatTime12h(time24: string) {
+  const [hhStr, mmStr] = time24.split(":");
+  const hh = Number(hhStr);
+  const mm = Number(mmStr);
+  const ampm = hh >= 12 ? "PM" : "AM";
+  const displayH = hh % 12 === 0 ? 12 : hh % 12;
+  const displayM = String(mm).padStart(2, "0");
+  return `${displayH}:${displayM} ${ampm}`;
+}
+
 export function BookingWidget() {
   const [simulator, setSimulator] = useState<(typeof booking.simulators)[number]>(
     booking.simulators[0],
   );
   const [date, setDate] = useState<string>(todayISO());
-  const [time, setTime] = useState<(typeof booking.slots)[number]>(booking.slots[2]);
+  const [slotDate, setSlotDate] = useState<string>(todayISO());
+  const [time, setTime] = useState<(typeof booking.slots)[number]>(booking.slots[0]);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -34,21 +45,74 @@ export function BookingWidget() {
 
   useEffect(() => setHydrated(true), []);
 
+  const slotOptions = useMemo(() => {
+    const [yyyyStr, mmStr, ddStr] = date.split("-");
+    const yyyy = Number(yyyyStr);
+    const mm = Number(mmStr);
+    const dd = Number(ddStr);
+    const selected = new Date(yyyy, mm - 1, dd);
+    const day = selected.getDay(); // 0=Sun ... 5=Fri, 6=Sat
+    const isFriOrSat = day === 5 || day === 6;
+
+    const pad2 = (n: number) => String(n).padStart(2, "0");
+    const addDaysISO = (d: Date, days: number) => {
+      const x = new Date(d);
+      x.setDate(x.getDate() + days);
+      return `${x.getFullYear()}-${pad2(x.getMonth() + 1)}-${pad2(x.getDate())}`;
+    };
+
+    const mkSlots = (startMin: number, endMin: number, slotDayOffset: number) => {
+      const arr: Array<{ slotDate: string; time: (typeof booking.slots)[number] }> = [];
+      const step = 15;
+      for (let m = startMin; m <= endMin; m += step) {
+        const hh = Math.floor(m / 60);
+        const mi = m % 60;
+        const timeStr = `${pad2(hh)}:${pad2(mi)}` as (typeof booking.slots)[number];
+        arr.push({ slotDate: addDaysISO(selected, slotDayOffset), time: timeStr });
+      }
+      return arr;
+    };
+
+    // Open at 10:00. Slots are 15 minutes each.
+    // Weekdays close by 11:00 PM (last start 22:45 ends 23:00).
+    // Friday & Saturday close by 1:00 AM (last start 23:45 ends 00:00, plus 00:00-00:45 next day).
+    const sameDayEndLastStart = isFriOrSat ? 23 * 60 + 45 : 22 * 60 + 45;
+    const nextDayEndLastStart = isFriOrSat ? 0 * 60 + 45 : -1;
+
+    const slots = [
+      ...mkSlots(10 * 60, sameDayEndLastStart, 0),
+      ...(isFriOrSat ? mkSlots(0, nextDayEndLastStart, 1) : []),
+    ];
+
+    return slots;
+  }, [date]);
+
   const availableSlots = useMemo(() => {
-    return booking.slots.map((s) => ({
-      time: s,
-      available: hydrated ? !isSlotBooked(simulator, date, s) : true,
+    return slotOptions.map((s) => ({
+      time: s.time,
+      slotDate: s.slotDate,
+      available: hydrated ? !isSlotBooked(simulator, s.slotDate, s.time) : true,
     }));
-  }, [date, hydrated, simulator]);
+  }, [hydrated, simulator, slotOptions]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const stillValid = availableSlots.some((s) => s.time === time && s.slotDate === slotDate);
+    if (!stillValid && availableSlots.length > 0) {
+      setTime(availableSlots[0].time);
+      setSlotDate(availableSlots[0].slotDate);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableSlots, hydrated]);
 
   const canBook = useMemo(() => {
     if (!hydrated) return false;
     if (name.trim().length < 2) return false;
     if (!email.includes("@")) return false;
     if (phone.trim().length < 8) return false;
-    if (isSlotBooked(simulator, date, time)) return false;
+    if (isSlotBooked(simulator, slotDate, time)) return false;
     return true;
-  }, [date, email, hydrated, name, phone, simulator, time]);
+  }, [email, hydrated, name, phone, simulator, slotDate, time]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-12">
@@ -88,7 +152,10 @@ export function BookingWidget() {
                 className={fieldBase()}
                 type="date"
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={(e) => {
+                  setDate(e.target.value);
+                  setSlotDate(e.target.value);
+                }}
                 min={todayISO()}
               />
             </div>
@@ -99,19 +166,23 @@ export function BookingWidget() {
               TIME SLOTS
             </div>
             <p className="mb-4 text-[11px] leading-6 text-white/55">
-              Last slot ends at <span className="text-white/80">21:00</span>. Weekdays close at{" "}
-              <span className="text-white/80">23:00</span>. Friday & Saturday close at{" "}
-              <span className="text-white/80">01:00</span>.
+              Slots are every <span className="text-white/80">15 minutes</span>.
+              Weekdays close by <span className="text-white/80">11:00 PM</span>. Friday & Saturday close by{" "}
+              <span className="text-white/80">1:00 AM</span>.
             </p>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-              {availableSlots.map((s) => {
-                const selected = time === s.time;
+            <div className="max-h-72 overflow-y-auto pr-1">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                {availableSlots.map((s) => {
+                  const selected = time === s.time && slotDate === s.slotDate;
                 return (
                   <button
-                    key={s.time}
+                    key={`${s.slotDate}_${s.time}`}
                     type="button"
                     disabled={!s.available}
-                    onClick={() => setTime(s.time)}
+                    onClick={() => {
+                      setSlotDate(s.slotDate);
+                      setTime(s.time);
+                    }}
                     className={cn(
                       "rounded-2xl border px-3 py-3 text-sm font-semibold tracking-wide transition-all duration-300",
                       s.available
@@ -125,10 +196,11 @@ export function BookingWidget() {
                         : undefined
                     }
                   >
-                    {s.time}
+                    {formatTime12h(s.time)}
                   </button>
                 );
-              })}
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -184,7 +256,7 @@ export function BookingWidget() {
               </div>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-white/60">Time</span>
-                <span className="font-semibold">{time}</span>
+                <span className="font-semibold">{formatTime12h(time)}</span>
               </div>
             </div>
           </div>
@@ -202,7 +274,7 @@ export function BookingWidget() {
                 const rec: BookingRecord = {
                   id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
                   simulator,
-                  date,
+                  date: slotDate,
                   time,
                   name: name.trim(),
                   phone: phone.trim(),
@@ -260,7 +332,7 @@ export function BookingWidget() {
                   Booking confirmed
                 </div>
                 <div className="mt-2 text-sm text-white/70">
-                  {confirmed.simulator} • {confirmed.date} • {confirmed.time}
+                  {confirmed.simulator} • {confirmed.date} • {formatTime12h(confirmed.time)}
                 </div>
                 <div className="mt-1 text-xs font-mono tracking-[0.22em] text-white/55">
                   CONFIRMATION ID: {confirmed.id}
