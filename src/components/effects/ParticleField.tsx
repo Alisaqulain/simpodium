@@ -13,9 +13,11 @@ type Dot = {
 
 export function ParticleField({
   density = 70,
+  connections = true,
   className,
 }: {
   density?: number;
+  connections?: boolean;
   className?: string;
 }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
@@ -89,8 +91,8 @@ export function ParticleField({
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
-      // subtle connections (skip on mobile/touch for smoothness)
-      if (!isHeavyMode) {
+      // subtle connections (O(n^2) work; disable for better performance)
+      if (!isHeavyMode && connections) {
         for (let i = 0; i < dots.length; i++) {
           for (let j = i + 1; j < dots.length; j++) {
             const a = dots[i];
@@ -120,7 +122,7 @@ export function ParticleField({
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
     };
-  }, [density]);
+  }, [density, connections]);
 
   return (
     <canvas

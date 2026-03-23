@@ -22,9 +22,21 @@ export function Footer() {
               nights.
             </p>
             <div className="mt-6 flex items-center gap-3">
-              <Social href="#" label="Instagram" Icon={Instagram} />
-              <Social href="#" label="Facebook" Icon={Facebook} />
-              <Social href="#" label="YouTube" Icon={Youtube} />
+              <Social
+                href="https://www.instagram.com/simpodium_/"
+                label="Instagram"
+                Icon={Instagram}
+              />
+              <Social
+                href="https://www.facebook.com/profile.php?id=61579495695574"
+                label="Facebook"
+                Icon={Facebook}
+              />
+              <Social
+                href="https://www.youtube.com/channel/UC9RdOgbhKC9LI77hLwokdjg"
+                label="YouTube"
+                Icon={Youtube}
+              />
             </div>
           </div>
 
@@ -103,6 +115,8 @@ function Social({
     <a
       href={href}
       aria-label={label}
+      target="_blank"
+      rel="noopener noreferrer"
       className="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/80 backdrop-blur transition-all hover:-translate-y-[1px] hover:bg-white/10 hover:text-white"
       style={{
         boxShadow: "inset 0 0 0 1px rgba(255,43,60,0.18)",

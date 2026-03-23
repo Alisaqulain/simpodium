@@ -3,7 +3,6 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ParticleField } from "@/components/effects/ParticleField";
-import { HeroVideo } from "@/components/site/HeroVideo";
 import { HeroGamingSlider } from "@/components/site/HeroGamingSlider";
 import { GallerySlider } from "@/components/ui/GallerySlider";
 import { business, cafeItems, experienceCards, gallery, testimonials } from "@/data/content";
@@ -54,14 +53,23 @@ export default async function Home() {
   };
   return (
     <div>
-      {/* HERO — background video, no 3D wheel; gaming cafe vibe */}
+      {/* HERO — lightweight gradient background (no video) */}
       <section className="relative min-h-[65vh] sm:min-h-[85vh] w-full overflow-x-hidden">
-  <div className="absolute inset-0 z-0">
-    <HeroVideo />
-  </div>
+  <div
+    className="absolute inset-0 z-0 pointer-events-none"
+    aria-hidden="true"
+    style={{
+      background:
+        "linear-gradient(105deg, rgba(15,17,21,0.82) 0%, rgba(15,17,21,0.45) 45%, rgba(20,24,33,0.6) 100%), radial-gradient(800px 500px at 15% 30%, rgba(255,43,60,0.18), transparent 50%), radial-gradient(600px 400px at 85% 60%, rgba(255,77,94,0.12), transparent 45%)",
+    }}
+  />
 
   <div className="pointer-events-none absolute inset-0 z-[1] hidden sm:block">
-    <ParticleField className="h-full w-full opacity-70" />
+    <ParticleField
+      className="h-full w-full opacity-70"
+      density={45}
+      connections={false}
+    />
   </div>
 
         <div className="sp-container relative z-10 py-9 sm:py-16 lg:py-24">
