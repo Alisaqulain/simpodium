@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getBookingStorage } from "@/lib/bookings/storage";
 import { validateBookingPayload } from "@/lib/bookings/validation";
 import { sendEmail } from "@/lib/email/sendEmail";
+import { buildOwnerBookingEmail, buildUserBookingEmail } from "@/lib/email/bookingEmailBuilder";
 import { enforceBookingRateLimit } from "@/lib/rate-limit";
 
 function getClientIp(request: Request) {
@@ -58,35 +59,33 @@ export async function POST(request: Request) {
   const record = await storage.create(validation.data);
 
   const ownerEmail = process.env.OWNER_EMAIL;
-  const details = [
-    `Booking ID: ${record.id}`,
-    `Simulator: ${record.simulator}`,
-    `Date: ${record.date}`,
-    `Time: ${record.time}`,
-    `Name: ${record.name}`,
-    `Phone: ${record.phone}`,
-    `Email: ${record.email}`,
-    `Created At: ${record.createdAt}`,
-  ].join("\n");
+  const ownerEmailContent = buildOwnerBookingEmail(record);
+  const userEmailContent = buildUserBookingEmail(record);
+  const emailTasks = [
+    sendEmail({
+      to: record.email,
+      subject: userEmailContent.subject,
+      text: userEmailContent.text,
+      html: userEmailContent.html,
+    }),
+  ];
 
   if (ownerEmail) {
-    const emailResults = await Promise.allSettled([
+    emailTasks.push(
       sendEmail({
         to: ownerEmail,
-        subject: `New booking received (${record.id})`,
-        text: `A new booking was submitted.\n\n${details}`,
+        subject: ownerEmailContent.subject,
+        text: ownerEmailContent.text,
+        html: ownerEmailContent.html,
       }),
-      sendEmail({
-        to: record.email,
-        subject: `Booking confirmation (${record.id})`,
-        text: `Your booking is confirmed.\n\n${details}\n\nSee you at SIM PODIUM!`,
-      }),
-    ]);
-    if (emailResults.some((result) => result.status === "rejected")) {
-      console.error("Failed to send one or more booking emails", emailResults);
-    }
+    );
   } else {
     console.error("OWNER_EMAIL is not set; owner booking notifications are disabled");
+  }
+
+  const emailResults = await Promise.allSettled(emailTasks);
+  if (emailResults.some((result) => result.status === "rejected")) {
+    console.error("Failed to send one or more booking emails", emailResults);
   }
 
   return NextResponse.json({ booking: record }, { status: 201 });
