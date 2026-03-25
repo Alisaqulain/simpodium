@@ -1,74 +1,93 @@
 import { NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import { booking } from "@/data/content";
+import { getBookingStorage } from "@/lib/bookings/storage";
+import { validateBookingPayload } from "@/lib/bookings/validation";
+import { sendEmail } from "@/lib/email/sendEmail";
+import { buildOwnerBookingEmail, buildUserBookingEmail } from "@/lib/email/bookingEmailBuilder";
+import { enforceBookingRateLimit } from "@/lib/rate-limit";
 
-export async function GET() {
-  const db = await connectToDatabase();
-  const docs = await db
-    .collection("bookings")
-    .find({})
-    .sort({ createdAt: -1 })
-    .limit(200)
-    .toArray();
+function getClientIp(request: Request) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() ?? "unknown";
+  }
+  const realIp = request.headers.get("x-real-ip");
+  return realIp?.trim() || "unknown";
+}
 
-  return NextResponse.json(
-    docs.map((b) => ({
-      id: b._id.toString(),
-      simulator: b.simulator,
-      date: b.date,
-      time: b.time,
-      name: b.name,
-      phone: b.phone,
-      email: b.email,
-      createdAt: b.createdAt ?? null,
+export async function GET(request: Request) {
+  const storage = getBookingStorage();
+  const { searchParams } = new URL(request.url);
+  const simulator = searchParams.get("simulator") ?? undefined;
+  const datesRaw = searchParams.get("dates");
+  const dates = datesRaw ? datesRaw.split(",").map((item) => item.trim()).filter(Boolean) : undefined;
+
+  const bookings = await storage.list({ simulator, dates });
+  return NextResponse.json({
+    bookings: bookings.map((item) => ({
+      id: item.id,
+      simulator: item.simulator,
+      date: item.date,
+      time: item.time,
     })),
-  );
+  });
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json().catch(() => null)) as
-    | {
-        simulator?: string;
-        date?: string;
-        time?: string;
-        name?: string;
-        phone?: string;
-        email?: string;
-      }
-    | null;
-
-  if (
-    !body ||
-    !body.simulator ||
-    !body.date ||
-    !body.time ||
-    !body.name ||
-    !body.phone ||
-    !body.email
-  ) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  const ip = getClientIp(request);
+  const limit = await enforceBookingRateLimit(`booking:${ip}`);
+  if (!limit.success) {
+    return NextResponse.json({ error: "Too many booking attempts. Try again in a minute." }, { status: 429 });
   }
 
-  const validSimulator = booking.simulators.includes(body.simulator as (typeof booking.simulators)[number]);
-  const validTime = booking.slots.includes(body.time as (typeof booking.slots)[number]);
-
-  if (!validSimulator || !validTime) {
-    return NextResponse.json({ error: "Invalid simulator or time" }, { status: 400 });
+  const payload = await request.json().catch(() => null);
+  const validation = validateBookingPayload(payload);
+  if (!validation.ok) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
   }
 
-  const doc = {
-    simulator: body.simulator,
-    date: body.date,
-    time: body.time,
-    name: body.name.trim(),
-    phone: body.phone.trim(),
-    email: body.email.trim(),
-    createdAt: new Date(),
-  };
+  const storage = getBookingStorage();
+  const alreadyBooked = await storage.isSlotBooked(
+    validation.data.simulator,
+    validation.data.date,
+    validation.data.time,
+  );
 
-  const db = await connectToDatabase();
-  const result = await db.collection("bookings").insertOne(doc);
+  if (alreadyBooked) {
+    return NextResponse.json({ error: "This slot is already booked." }, { status: 409 });
+  }
 
-  return NextResponse.json({ id: result.insertedId.toString(), ...doc }, { status: 201 });
+  const record = await storage.create(validation.data);
+
+  const ownerEmail = process.env.OWNER_EMAIL;
+  const ownerEmailContent = buildOwnerBookingEmail(record);
+  const userEmailContent = buildUserBookingEmail(record);
+  const emailTasks = [
+    sendEmail({
+      to: record.email,
+      subject: userEmailContent.subject,
+      text: userEmailContent.text,
+      html: userEmailContent.html,
+    }),
+  ];
+
+  if (ownerEmail) {
+    emailTasks.push(
+      sendEmail({
+        to: ownerEmail,
+        subject: ownerEmailContent.subject,
+        text: ownerEmailContent.text,
+        html: ownerEmailContent.html,
+      }),
+    );
+  } else {
+    console.error("OWNER_EMAIL is not set; owner booking notifications are disabled");
+  }
+
+  const emailResults = await Promise.allSettled(emailTasks);
+  if (emailResults.some((result) => result.status === "rejected")) {
+    console.error("Failed to send one or more booking emails", emailResults);
+  }
+
+  return NextResponse.json({ booking: record }, { status: 201 });
 }
 

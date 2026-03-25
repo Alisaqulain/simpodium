@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { booking, business } from "@/data/content";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+import { getSlotOptions } from "@/lib/bookings/slots";
 import { saveBooking, isSlotBooked, type BookingRecord } from "./bookingStore";
 
 function fieldBase() {
@@ -34,7 +35,7 @@ export function BookingWidget() {
   );
   const [date, setDate] = useState<string>(todayISO());
   const [slotDate, setSlotDate] = useState<string>(todayISO());
-  const [time, setTime] = useState<(typeof booking.slots)[number]>(booking.slots[0]);
+  const [time, setTime] = useState<string>("10:00");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -42,58 +43,63 @@ export function BookingWidget() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [serverBookedKeys, setServerBookedKeys] = useState<Set<string>>(new Set());
+  const [loadingSlots, setLoadingSlots] = useState(false);
 
   useEffect(() => setHydrated(true), []);
 
-  const slotOptions = useMemo(() => {
-    const [yyyyStr, mmStr, ddStr] = date.split("-");
-    const yyyy = Number(yyyyStr);
-    const mm = Number(mmStr);
-    const dd = Number(ddStr);
-    const selected = new Date(yyyy, mm - 1, dd);
-    const day = selected.getDay(); // 0=Sun ... 5=Fri, 6=Sat
-    const isFriOrSat = day === 5 || day === 6;
+  const slotOptions = useMemo(() => getSlotOptions(date), [date]);
 
-    const pad2 = (n: number) => String(n).padStart(2, "0");
-    const addDaysISO = (d: Date, days: number) => {
-      const x = new Date(d);
-      x.setDate(x.getDate() + days);
-      return `${x.getFullYear()}-${pad2(x.getMonth() + 1)}-${pad2(x.getDate())}`;
-    };
+  const slotDates = useMemo(() => {
+    return Array.from(new Set(slotOptions.map((slot) => slot.slotDate)));
+  }, [slotOptions]);
 
-    const mkSlots = (startMin: number, endMin: number, slotDayOffset: number) => {
-      const arr: Array<{ slotDate: string; time: (typeof booking.slots)[number] }> = [];
-      const step = 15;
-      for (let m = startMin; m <= endMin; m += step) {
-        const hh = Math.floor(m / 60);
-        const mi = m % 60;
-        const timeStr = `${pad2(hh)}:${pad2(mi)}` as (typeof booking.slots)[number];
-        arr.push({ slotDate: addDaysISO(selected, slotDayOffset), time: timeStr });
+  useEffect(() => {
+    let mounted = true;
+    const fetchBookedSlots = async () => {
+      setLoadingSlots(true);
+      try {
+        const qs = new URLSearchParams();
+        qs.set("simulator", simulator);
+        qs.set("dates", slotDates.join(","));
+        const res = await fetch(`/api/bookings?${qs.toString()}`);
+        if (!res.ok) {
+          throw new Error("Failed to load booked slots");
+        }
+        const data = (await res.json()) as {
+          bookings?: Array<{ simulator: string; date: string; time: string }>;
+        };
+        if (!mounted) return;
+        const keys = new Set(
+          (data.bookings ?? []).map((bookingRow) =>
+            `${bookingRow.simulator}_${bookingRow.date}_${bookingRow.time}`,
+          ),
+        );
+        setServerBookedKeys(keys);
+      } catch (fetchError) {
+        console.error(fetchError);
+        if (mounted) setServerBookedKeys(new Set());
+      } finally {
+        if (mounted) setLoadingSlots(false);
       }
-      return arr;
     };
 
-    // Open at 10:00. Slots are 15 minutes each.
-    // Weekdays close by 11:00 PM (last start 22:45 ends 23:00).
-    // Friday & Saturday close by 1:00 AM (last start 23:45 ends 00:00, plus 00:00-00:45 next day).
-    const sameDayEndLastStart = isFriOrSat ? 23 * 60 + 45 : 22 * 60 + 45;
-    const nextDayEndLastStart = isFriOrSat ? 0 * 60 + 45 : -1;
-
-    const slots = [
-      ...mkSlots(10 * 60, sameDayEndLastStart, 0),
-      ...(isFriOrSat ? mkSlots(0, nextDayEndLastStart, 1) : []),
-    ];
-
-    return slots;
-  }, [date]);
+    void fetchBookedSlots();
+    return () => {
+      mounted = false;
+    };
+  }, [simulator, slotDates]);
 
   const availableSlots = useMemo(() => {
     return slotOptions.map((s) => ({
       time: s.time,
       slotDate: s.slotDate,
-      available: hydrated ? !isSlotBooked(simulator, s.slotDate, s.time) : true,
+      available: hydrated
+        ? !isSlotBooked(simulator, s.slotDate, s.time) &&
+          !serverBookedKeys.has(`${simulator}_${s.slotDate}_${s.time}`)
+        : true,
     }));
-  }, [hydrated, simulator, slotOptions]);
+  }, [hydrated, serverBookedKeys, simulator, slotOptions]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -111,8 +117,9 @@ export function BookingWidget() {
     if (!email.includes("@")) return false;
     if (phone.trim().length < 8) return false;
     if (isSlotBooked(simulator, slotDate, time)) return false;
+    if (serverBookedKeys.has(`${simulator}_${slotDate}_${time}`)) return false;
     return true;
-  }, [email, hydrated, name, phone, simulator, slotDate, time]);
+  }, [email, hydrated, name, phone, serverBookedKeys, simulator, slotDate, time]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-12">
@@ -252,7 +259,7 @@ export function BookingWidget() {
               </div>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-white/60">Date</span>
-                <span className="font-semibold">{date}</span>
+                <span className="font-semibold">{slotDate}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-white/60">Time</span>
@@ -295,13 +302,23 @@ export function BookingWidget() {
                     }),
                   });
                   if (!res.ok) {
-                    throw new Error("Booking failed");
+                    const data = (await res.json().catch(() => null)) as { error?: string } | null;
+                    throw new Error(data?.error ?? "Booking failed");
                   }
+                  const payload = (await res.json()) as { booking: { id: string } };
+                  rec.id = payload.booking.id;
                   saveBooking(rec);
+                  setServerBookedKeys((prev) => {
+                    const next = new Set(prev);
+                    next.add(`${rec.simulator}_${rec.date}_${rec.time}`);
+                    return next;
+                  });
                   setConfirmed(rec);
                 } catch (err) {
                   console.error(err);
-                  setError("Could not confirm booking. Please try again.");
+                  setError(
+                    err instanceof Error ? err.message : "Could not confirm booking. Please try again.",
+                  );
                 } finally {
                   setSubmitting(false);
                 }
@@ -312,6 +329,7 @@ export function BookingWidget() {
             {error ? (
               <div className="mt-2 text-xs text-red-300">{error}</div>
             ) : null}
+            {loadingSlots ? <div className="mt-2 text-xs text-white/50">Refreshing live availability...</div> : null}
             <div className="mt-3 text-xs text-white/50">
               By confirming, you agree to arrive on time. Need help? Email{" "}
               <a className="text-white/70 hover:text-white" href={`mailto:${business.email}`}>
