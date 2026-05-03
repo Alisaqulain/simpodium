@@ -1,9 +1,4 @@
-"use client";
-
 import Image from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCoverflow, Pagination, Autoplay } from "swiper/modules";
-import { motion } from "framer-motion";
 
 export function GallerySlider({
   items,
@@ -21,47 +16,30 @@ export function GallerySlider({
         }}
       />
 
-      <Swiper
-        modules={[EffectCoverflow, Pagination, Autoplay]}
-        effect="coverflow"
-        centeredSlides
-        slidesPerView={"auto"}
-        grabCursor
-        loop
-        autoplay={{ delay: 2600, disableOnInteraction: false }}
-        pagination={{ clickable: true }}
-        coverflowEffect={{
-          rotate: 18,
-          stretch: 0,
-          depth: 160,
-          modifier: 1,
-          slideShadows: false,
-        }}
-        className="relative z-10 py-10"
+      <div
+        className="relative z-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth py-10 pb-6 [scrollbar-width:thin] [scrollbar-color:rgba(255,43,60,0.45)_rgba(255,255,255,0.06)]"
+        tabIndex={0}
+        aria-label="Simulator gallery, scroll horizontally"
       >
-        {items.map((it) => (
-          <SwiperSlide
+        {items.map((it, idx) => (
+          <div
             key={it.title}
+            className="shrink-0 snap-center px-3 first:pl-4 last:pr-4"
             style={{ width: "min(520px, 86vw)" }}
-            className="px-3"
           >
-            <motion.div
-              className="group relative overflow-hidden rounded-[22px] border border-white/10 bg-black/20"
-              whileHover={{ rotateX: 2, rotateY: -3, y: -2 }}
-              transition={{ duration: 0.25 }}
-              style={{
-                boxShadow:
-                  "0 24px 70px rgba(0,0,0,0.55), 0 0 44px rgba(255,43,60,0.12)",
-                transformStyle: "preserve-3d",
-              }}
+            <div
+              className="group relative overflow-hidden rounded-[22px] border border-white/10 bg-black/20 shadow-[0_24px_70px_rgba(0,0,0,0.55),0_0_44px_rgba(255,43,60,0.12)] transition-transform duration-300 will-change-transform hover:-translate-y-0.5"
+              style={{ transformStyle: "preserve-3d" }}
             >
               <Image
                 src={it.img}
                 alt={it.title}
-                width={1600}
-                height={1000}
-                className="h-[340px] w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                priority={false}
+                width={1200}
+                height={750}
+                className="h-[280px] w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] sm:h-[340px]"
+                sizes="(max-width: 640px) 86vw, 520px"
+                loading={idx === 0 ? "eager" : "lazy"}
+                decoding={idx === 0 ? "sync" : "async"}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
 
@@ -70,7 +48,7 @@ export function GallerySlider({
                   {it.title}
                 </div>
                 <div className="mt-1 text-xs font-semibold tracking-[0.22em] text-white/55">
-                  SWIPE • HOVER • GLOW
+                  SCROLL • SNAP • GLOW
                 </div>
               </div>
 
@@ -84,22 +62,10 @@ export function GallerySlider({
                 className="pointer-events-none absolute -bottom-24 -right-20 h-56 w-56 rounded-full blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                 style={{ background: "rgba(255,77,94,0.18)" }}
               />
-            </motion.div>
-          </SwiperSlide>
+            </div>
+          </div>
         ))}
-      </Swiper>
-
-      <style jsx global>{`
-        .swiper-pagination-bullet {
-          background: rgba(255, 255, 255, 0.25);
-          opacity: 1;
-        }
-        .swiper-pagination-bullet-active {
-          background: #ff2b3c;
-          box-shadow: 0 0 18px rgba(255, 43, 60, 0.45);
-        }
-      `}</style>
+      </div>
     </div>
   );
 }
-

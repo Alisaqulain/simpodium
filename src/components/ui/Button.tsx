@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -32,7 +31,7 @@ export function Button({
   children,
 }: Props) {
   const base =
-    "relative inline-flex items-center justify-center gap-2 rounded-2xl font-semibold tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(255,43,60,0.35)] focus-visible:ring-offset-0";
+    "group relative inline-flex items-center justify-center gap-2 rounded-2xl font-semibold tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(255,43,60,0.35)] focus-visible:ring-offset-0";
 
   const variantClass =
     variant === "primary"
@@ -54,11 +53,12 @@ export function Button({
   const content = (
     <>
       <span className="relative z-10">{children}</span>
-      <motion.span
+      <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0"
-        whileHover={{ opacity: variant === "primary" ? 1 : 0 }}
-        transition={{ duration: 0.25 }}
+        className={cn(
+          "pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300",
+          variant === "primary" && "group-hover:opacity-100",
+        )}
         style={{
           background:
             "radial-gradient(500px 220px at 30% 10%, rgba(255,255,255,0.25), transparent 55%)",
@@ -89,4 +89,3 @@ export function Button({
     </button>
   );
 }
-

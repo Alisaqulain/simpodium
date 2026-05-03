@@ -1,10 +1,16 @@
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { ParticleField } from "@/components/effects/ParticleField";
 import { HeroGamingSlider } from "@/components/site/HeroGamingSlider";
 import { GallerySlider } from "@/components/ui/GallerySlider";
+
+const ParticleField = dynamic(
+  () =>
+    import("@/components/effects/ParticleField").then((m) => m.ParticleField),
+  { ssr: false, loading: () => null },
+);
 import { business, cafeItems, experienceCards, gallery, testimonials } from "@/data/content";
 import { ArrowRight } from "lucide-react";
 
@@ -117,11 +123,9 @@ export default async function Home() {
 
       </div>
 
-      {/* IMAGE / SLIDER */}
-      <div className="lg:col-span-5 order-1 lg:order-2">
-        <Reveal>
-          <HeroGamingSlider />
-        </Reveal>
+      {/* IMAGE / SLIDER — no Reveal wrapper: keep LCP image discoverable immediately */}
+      <div className="order-1 lg:order-2 lg:col-span-5">
+        <HeroGamingSlider />
       </div>
 
     </div>

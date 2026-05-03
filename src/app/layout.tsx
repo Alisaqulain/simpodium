@@ -1,19 +1,34 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
-import { ScrollProgress } from "@/components/site/ScrollProgress";
-import { AnimatedCursor } from "@/components/site/AnimatedCursor";
+
+const ScrollProgress = dynamic(
+  () =>
+    import("@/components/site/ScrollProgress").then((m) => m.ScrollProgress),
+  { ssr: false },
+);
+
+const AnimatedCursor = dynamic(
+  () =>
+    import("@/components/site/AnimatedCursor").then((m) => m.AnimatedCursor),
+  { ssr: false },
+);
 
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: true,
 });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -71,6 +86,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preconnect"
+          href="https://images.unsplash.com"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >

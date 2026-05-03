@@ -57,19 +57,19 @@ export const experienceCards = [
 export const gallery = [
   {
     title: "Cockpit Rig • Neon Arena",
-    img: "https://images.unsplash.com/photo-1526397751294-331021109fbd?auto=format&fit=crop&w=1600&q=80",
+    img: "https://images.unsplash.com/photo-1526397751294-331021109fbd?auto=format&fit=crop&w=1200&q=75",
   },
   {
     title: "Esports Lounge • Focus Mode",
-    img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80",
+    img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=75",
   },
   {
     title: "Ultra Wide Immersion",
-    img: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1600&q=80",
+    img: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=75",
   },
   {
     title: "Night Club Lighting • Racing Vibe",
-    img: "https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?auto=format&fit=crop&w=1600&q=80",
+    img: "https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?auto=format&fit=crop&w=1200&q=75",
   },
 ] as const;
 
