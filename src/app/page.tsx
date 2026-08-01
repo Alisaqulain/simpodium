@@ -12,6 +12,7 @@ const ParticleField = dynamic(
   { ssr: false, loading: () => null },
 );
 import { business, cafeItems, experienceCards, gallery, testimonials } from "@/data/content";
+import { features } from "@/config/features";
 import { ArrowRight } from "lucide-react";
 
 type RaceMode = {
@@ -106,8 +107,12 @@ export default async function Home() {
 
         <Reveal delay={0} y={0} transition={{ duration: 0.15 }}>
           <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-            <Button href="/bookings" size="lg" className="w-full sm:w-auto">
-              Book Now
+            <Button
+              href={features.bookingSlots ? "/bookings" : "/contact"}
+              size="lg"
+              className="w-full sm:w-auto"
+            >
+              {features.bookingSlots ? "Book Now" : "Contact Us"}
             </Button>
 
             <Button
@@ -461,11 +466,12 @@ export default async function Home() {
                     ) : null}
                     <div className="mt-6">
                       <Button
-                        href="/bookings"
+                        href={features.bookingSlots ? "/bookings" : "/contact"}
                         variant={isPopular ? "primary" : "secondary"}
                         className="w-full transition-transform duration-300 group-hover:-translate-y-[1px]"
                       >
-                        Book {p.name} <ArrowRight size={16} />
+                        {features.bookingSlots ? `Book ${p.name}` : "Contact Us"}{" "}
+                        <ArrowRight size={16} />
                       </Button>
                     </div>
                   </div>

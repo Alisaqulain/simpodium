@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import { booking } from "@/data/content";
+import { features } from "@/config/features";
 
 export async function GET() {
   const db = await connectToDatabase();
@@ -26,6 +27,13 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!features.bookingSlots) {
+    return NextResponse.json(
+      { error: "Online booking is temporarily unavailable" },
+      { status: 503 },
+    );
+  }
+
   const body = (await request.json().catch(() => null)) as
     | {
         simulator?: string;

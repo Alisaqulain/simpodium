@@ -3,6 +3,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { shopProducts } from "@/data/content";
+import { features } from "@/config/features";
 
 type ShopItem = {
   id: string;
@@ -107,8 +108,11 @@ export default async function ShopPage() {
                     <Button href="/contact" variant="secondary" className="w-full">
                       Enquire
                     </Button>
-                    <Button href="/bookings" className="w-full">
-                      Try In Lounge
+                    <Button
+                      href={features.bookingSlots ? "/bookings" : "/contact"}
+                      className="w-full"
+                    >
+                      {features.bookingSlots ? "Try In Lounge" : "Contact Us"}
                     </Button>
                   </div>
                 </div>

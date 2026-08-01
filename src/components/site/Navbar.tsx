@@ -7,17 +7,22 @@ import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 import { business } from "@/data/content";
+import { features } from "@/config/features";
 
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/bookings", label: "Bookings" },
+  ...(features.bookingSlots ? [{ href: "/bookings", label: "Bookings" }] : []),
   { href: "/cafe", label: "Cafe" },
   { href: "/shop", label: "Shop" },
   { href: "/testimonials", label: "Testimonials" },
   { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
 ];
+
+const primaryCta = features.bookingSlots
+  ? { href: "/bookings", label: "Book Now" }
+  : { href: "/contact", label: "Contact Us" };
 
 export function Navbar() {
   const pathname = usePathname();
@@ -112,7 +117,7 @@ export function Navbar() {
                 {business.phone}
               </a>
               <Link
-                href="/bookings"
+                href={primaryCta.href}
                 className={cn(
                   "hidden rounded-xl px-4 py-2 text-sm font-semibold tracking-wide text-white lg:inline-flex",
                   "border border-white/10 bg-white/5 backdrop-blur",
@@ -122,7 +127,7 @@ export function Navbar() {
                   boxShadow: "inset 0 0 0 1px rgba(255,43,60,0.35), 0 0 24px rgba(255,43,60,0.18)",
                 }}
               >
-                Book Now
+                {primaryCta.label}
               </Link>
 
               <button
@@ -164,7 +169,7 @@ export function Navbar() {
               <div className="mb-4 flex items-center justify-between">
                 <Logo />
                 <Link
-                  href="/bookings"
+                  href={primaryCta.href}
                   onClick={() => setOpen(false)}
                   className="rounded-xl px-3 py-2 text-sm font-semibold tracking-wide text-white"
                   style={{
@@ -173,7 +178,7 @@ export function Navbar() {
                     boxShadow: "0 0 28px rgba(255,43,60,0.25)",
                   }}
                 >
-                  Book Now
+                  {primaryCta.label}
                 </Link>
               </div>
 

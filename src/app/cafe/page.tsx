@@ -3,6 +3,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { cafeItems, business } from "@/data/content";
+import { features } from "@/config/features";
 
 type CafeItemRecord = {
   id: string;
@@ -150,8 +151,12 @@ export default async function CafePage() {
                   {business.addressOneLine}
                 </div>
                 <div className="mt-4">
-                  <Button href="/bookings" size="lg" className="w-full">
-                    Book & Grab a Bite
+                  <Button
+                    href={features.bookingSlots ? "/bookings" : "/contact"}
+                    size="lg"
+                    className="w-full"
+                  >
+                    {features.bookingSlots ? "Book & Grab a Bite" : "Contact Us"}
                   </Button>
                 </div>
               </div>

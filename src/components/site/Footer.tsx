@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Instagram, Facebook, Youtube } from "lucide-react";
+import { features } from "@/config/features";
 import { Logo } from "./Logo";
 
 export function Footer() {
@@ -46,7 +47,9 @@ export function Footer() {
             </div>
             <div className="mt-4 grid gap-2 text-sm">
               <FooterLink href="/about">About</FooterLink>
-              <FooterLink href="/bookings">Bookings</FooterLink>
+              {features.bookingSlots ? (
+                <FooterLink href="/bookings">Bookings</FooterLink>
+              ) : null}
               <FooterLink href="/cafe">Cafe</FooterLink>
               <FooterLink href="/shop">Shop</FooterLink>
               <FooterLink href="/testimonials">Testimonials</FooterLink>

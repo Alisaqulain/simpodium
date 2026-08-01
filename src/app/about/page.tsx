@@ -3,6 +3,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { business, owners, services } from "@/data/content";
+import { features } from "@/config/features";
 import { FounderCard } from "@/components/site/FounderCard";
 
 export const metadata = {
@@ -75,8 +76,11 @@ export default function AboutPage() {
                   {business.addressOneLine}
                 </div>
                 <div className="mt-4">
-                  <Button href="/bookings" size="lg">
-                    Book a Session
+                  <Button
+                    href={features.bookingSlots ? "/bookings" : "/contact"}
+                    size="lg"
+                  >
+                    {features.bookingSlots ? "Book a Session" : "Contact Us"}
                   </Button>
                 </div>
               </div>
