@@ -22,7 +22,7 @@ const navItems = [
 
 const primaryCta = features.bookingSlots
   ? { href: "/bookings", label: "Book Now" }
-  : { href: "/contact", label: "Contact Us" };
+  : { href: "/#booking-soon", label: "Launching Soon" };
 
 export function Navbar() {
   const pathname = usePathname();

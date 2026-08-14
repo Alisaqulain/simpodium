@@ -4,6 +4,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { HeroGamingSlider } from "@/components/site/HeroGamingSlider";
+import { BookingLaunchSection } from "@/components/site/BookingLaunchSection";
 import { GallerySlider } from "@/components/ui/GallerySlider";
 
 const ParticleField = dynamic(
@@ -108,11 +109,11 @@ export default async function Home() {
         <Reveal delay={0} y={0} transition={{ duration: 0.15 }}>
           <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
             <Button
-              href={features.bookingSlots ? "/bookings" : "/contact"}
+              href={features.bookingSlots ? "/bookings" : "#booking-soon"}
               size="lg"
               className="w-full sm:w-auto"
             >
-              {features.bookingSlots ? "Book Now" : "Contact Us"}
+              {features.bookingSlots ? "Book Now" : "Launching Soon"}
             </Button>
 
             <Button
@@ -136,6 +137,8 @@ export default async function Home() {
     </div>
   </div>
 </section>
+
+      {!features.bookingSlots ? <BookingLaunchSection /> : null}
 
       {/* RC INDOOR RACING */}
       <section className="relative py-14 sm:py-16">

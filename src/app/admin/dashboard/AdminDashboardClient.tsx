@@ -590,19 +590,25 @@ export function AdminDashboardClient() {
             <div className="grid gap-2">
               <input
                 className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
-                placeholder="Name"
+                placeholder="Product name (e.g. Racing Gloves)"
+                autoComplete="off"
+                name="shop-product-name"
                 value={shopDraft.name}
                 onChange={(e) => setShopDraft((d) => ({ ...d, name: e.target.value }))}
               />
               <input
                 className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
                 placeholder="Real price (MRP) (e.g. ₹7,999)"
+                autoComplete="off"
+                name="shop-product-mrp"
                 value={shopDraft.price}
                 onChange={(e) => setShopDraft((d) => ({ ...d, price: e.target.value }))}
               />
               <input
                 className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
                 placeholder="Discount price after discount (optional)"
+                autoComplete="off"
+                name="shop-product-sale-price"
                 value={shopDiscountPrice}
                 onChange={(e) => setShopDiscountPrice(e.target.value)}
               />
@@ -610,12 +616,16 @@ export function AdminDashboardClient() {
                 type="number"
                 className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
                 placeholder="Points (optional)"
+                autoComplete="off"
+                name="shop-product-points"
                 value={shopPointsDraft}
                 onChange={(e) => setShopPointsDraft(e.target.value)}
               />
               <input
                 className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
                 placeholder="Short description"
+                autoComplete="off"
+                name="shop-product-desc"
                 value={shopDraft.desc}
                 onChange={(e) => setShopDraft((d) => ({ ...d, desc: e.target.value }))}
               />
@@ -703,13 +713,17 @@ export function AdminDashboardClient() {
               <div className="grid gap-2">
                 <input
                   className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
-                  placeholder="Name"
+                  placeholder="Item name (e.g. Cappuccino)"
+                  autoComplete="off"
+                  name="cafe-item-name"
                   value={cafeDraft.name}
                   onChange={(e) => setCafeDraft((d) => ({ ...d, name: e.target.value }))}
                 />
                 <input
                   className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
                   placeholder="Price (e.g. ₹199)"
+                  autoComplete="off"
+                  name="cafe-item-price"
                   value={cafeDraft.price}
                   onChange={(e) => setCafeDraft((d) => ({ ...d, price: e.target.value }))}
                 />
@@ -773,6 +787,8 @@ export function AdminDashboardClient() {
               <input
                 className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
                 placeholder="Mode name (e.g. Single Race)"
+                autoComplete="off"
+                name="race-mode-name"
                 value={raceModeDraft.name}
                 onChange={(e) =>
                   setRaceModeDraft((d) => ({
@@ -784,6 +800,8 @@ export function AdminDashboardClient() {
               <input
                 className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
                 placeholder="Price (e.g. ₹299)"
+                autoComplete="off"
+                name="race-mode-price"
                 value={raceModeDraft.price}
                 onChange={(e) =>
                   setRaceModeDraft((d) => ({
@@ -979,7 +997,9 @@ export function AdminDashboardClient() {
             <div className="grid gap-2">
               <input
                 className="rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white/90 placeholder:text-white/35"
-                placeholder="Name"
+                placeholder="Customer name"
+                autoComplete="off"
+                name="testimonial-customer-name"
                 value={testimonialDraft.name}
                 onChange={(e) =>
                   setTestimonialDraft((d) => ({
