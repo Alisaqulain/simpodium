@@ -75,14 +75,13 @@ export default function AboutPage() {
                 <div className="mt-2 text-sm leading-7 text-white/70">
                   {business.addressOneLine}
                 </div>
-                <div className="mt-4">
-                  <Button
-                    href={features.bookingSlots ? "/bookings" : "/contact"}
-                    size="lg"
-                  >
-                    {features.bookingSlots ? "Book a Session" : "Contact Us"}
-                  </Button>
-                </div>
+                {features.bookingSlots ? (
+                  <div className="mt-4">
+                    <Button href="/bookings" size="lg">
+                      Book a Session
+                    </Button>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>

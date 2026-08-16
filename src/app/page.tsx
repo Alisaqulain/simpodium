@@ -108,17 +108,15 @@ export default async function Home() {
 
         <Reveal delay={0} y={0} transition={{ duration: 0.15 }}>
           <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-            <Button
-              href={features.bookingSlots ? "/bookings" : "#booking-soon"}
-              size="lg"
-              className="w-full sm:w-auto"
-            >
-              {features.bookingSlots ? "Book Now" : "Launching Soon"}
-            </Button>
+            {features.bookingSlots ? (
+              <Button href="/bookings" size="lg" className="w-full sm:w-auto">
+                Book Now
+              </Button>
+            ) : null}
 
             <Button
               href="#simulators"
-              variant="secondary"
+              variant={features.bookingSlots ? "secondary" : "primary"}
               size="lg"
               className="w-full sm:w-auto"
             >
@@ -396,8 +394,12 @@ export default async function Home() {
                 />
                 <StepCard
                   n="02"
-                  title="Lock your slot"
-                  desc="Pick date and time, confirm in a few taps, and get ready. No friction, no overthinking."
+                  title={features.bookingSlots ? "Lock your slot" : "Online booking — launching soon"}
+                  desc={
+                    features.bookingSlots
+                      ? "Pick date and time, confirm in a few taps, and get ready. No friction, no overthinking."
+                      : "Soon you'll pick a date and time on the website and confirm in a few taps."
+                  }
                   icon="calendar"
                 />
                 <StepCard
@@ -467,16 +469,17 @@ export default async function Home() {
                     {p.note ? (
                       <div className="mt-4 text-sm text-white/70">{p.note}</div>
                     ) : null}
-                    <div className="mt-6">
-                      <Button
-                        href={features.bookingSlots ? "/bookings" : "/contact"}
-                        variant={isPopular ? "primary" : "secondary"}
-                        className="w-full transition-transform duration-300 group-hover:-translate-y-[1px]"
-                      >
-                        {features.bookingSlots ? `Book ${p.name}` : "Contact Us"}{" "}
-                        <ArrowRight size={16} />
-                      </Button>
-                    </div>
+                    {features.bookingSlots ? (
+                      <div className="mt-6">
+                        <Button
+                          href="/bookings"
+                          variant={isPopular ? "primary" : "secondary"}
+                          className="w-full transition-transform duration-300 group-hover:-translate-y-[1px]"
+                        >
+                          Book {p.name} <ArrowRight size={16} />
+                        </Button>
+                      </div>
+                    ) : null}
                   </div>
                 </Reveal>
               );
@@ -670,8 +673,8 @@ export default async function Home() {
             </div>
             <p className="mt-3 text-sm leading-7 text-white/70">
               SIM PODIUM is the best sim racing experience in Bangalore — a premium racing simulator
-              gaming cafe in Indiranagar. Book an F1-inspired racing simulator lounge, enjoy
-              static & motion racing rigs, and get esports practice with multiplayer battles and
+              gaming cafe in Indiranagar. Experience an F1-inspired racing simulator lounge,
+              static & motion racing rigs, esports practice with multiplayer battles, and
               an arcade lounge feel.
             </p>
             <div className="mt-4 flex flex-wrap gap-2 text-[11px] text-white/70">

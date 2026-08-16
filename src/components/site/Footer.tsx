@@ -52,8 +52,10 @@ export function Footer() {
               ) : null}
               <FooterLink href="/cafe">Cafe</FooterLink>
               <FooterLink href="/shop">Shop</FooterLink>
-              <FooterLink href="/testimonials">Testimonials</FooterLink>
-              <FooterLink href="/blog">Blog</FooterLink>
+              {features.testimonials ? (
+                <FooterLink href="/testimonials">Testimonials</FooterLink>
+              ) : null}
+              {features.blog ? <FooterLink href="/blog">Blog</FooterLink> : null}
               <FooterLink href="/contact">Contact</FooterLink>
             </div>
           </div>
@@ -75,9 +77,13 @@ export function Footer() {
               </div>
               <div>
                 <span className="text-white/60">Phone:</span>{" "}
-                <a className="hover:text-white" href="tel:+919900086633">
-                  +91 99000 86633
-                </a>
+                {features.bookingSlots ? (
+                  <a className="hover:text-white" href="tel:+919900086633">
+                    +91 99000 86633
+                  </a>
+                ) : (
+                  <span>+91 99000 86633</span>
+                )}
               </div>
             </div>
           </div>

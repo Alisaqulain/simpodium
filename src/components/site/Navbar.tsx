@@ -15,14 +15,14 @@ const navItems = [
   ...(features.bookingSlots ? [{ href: "/bookings", label: "Bookings" }] : []),
   { href: "/cafe", label: "Cafe" },
   { href: "/shop", label: "Shop" },
-  { href: "/testimonials", label: "Testimonials" },
-  { href: "/blog", label: "Blog" },
+  ...(features.testimonials ? [{ href: "/testimonials", label: "Testimonials" }] : []),
+  ...(features.blog ? [{ href: "/blog", label: "Blog" }] : []),
   { href: "/contact", label: "Contact" },
 ];
 
 const primaryCta = features.bookingSlots
   ? { href: "/bookings", label: "Book Now" }
-  : { href: "/#booking-soon", label: "Launching Soon" };
+  : null;
 
 export function Navbar() {
   const pathname = usePathname();
@@ -56,7 +56,8 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          "fixed left-0 right-0 top-0 z-60 transition-all duration-300",
+          "fixed left-0 right-0 z-60 transition-all duration-300",
+          features.bookingSlots ? "top-0" : "top-[var(--sp-banner-h)]",
           isScrolled ? "py-3" : "py-5",
         )}
       >
@@ -106,29 +107,33 @@ export function Navbar() {
             </nav>
 
             <div className="flex items-center gap-3">
-              <a
-                href={`tel:${business.phone.replace(/\s/g, "")}`}
-                className={cn(
-                  "hidden rounded-xl px-3 py-2 text-sm font-semibold tracking-wide text-white/90 lg:inline-flex",
-                  "border border-white/10 bg-white/5 backdrop-blur",
-                  "transition-all duration-300 hover:-translate-y-[1px] hover:text-white hover:bg-white/10",
-                )}
-              >
-                {business.phone}
-              </a>
-              <Link
-                href={primaryCta.href}
-                className={cn(
-                  "hidden rounded-xl px-4 py-2 text-sm font-semibold tracking-wide text-white lg:inline-flex",
-                  "border border-white/10 bg-white/5 backdrop-blur",
-                  "transition-all duration-300 hover:-translate-y-[1px]",
-                )}
-                style={{
-                  boxShadow: "inset 0 0 0 1px rgba(255,43,60,0.35), 0 0 24px rgba(255,43,60,0.18)",
-                }}
-              >
-                {primaryCta.label}
-              </Link>
+              {features.bookingSlots ? (
+                <a
+                  href={`tel:${business.phone.replace(/\s/g, "")}`}
+                  className={cn(
+                    "hidden rounded-xl px-3 py-2 text-sm font-semibold tracking-wide text-white/90 lg:inline-flex",
+                    "border border-white/10 bg-white/5 backdrop-blur",
+                    "transition-all duration-300 hover:-translate-y-[1px] hover:text-white hover:bg-white/10",
+                  )}
+                >
+                  {business.phone}
+                </a>
+              ) : null}
+              {primaryCta ? (
+                <Link
+                  href={primaryCta.href}
+                  className={cn(
+                    "hidden rounded-xl px-4 py-2 text-sm font-semibold tracking-wide text-white lg:inline-flex",
+                    "border border-white/10 bg-white/5 backdrop-blur",
+                    "transition-all duration-300 hover:-translate-y-[1px]",
+                  )}
+                  style={{
+                    boxShadow: "inset 0 0 0 1px rgba(255,43,60,0.35), 0 0 24px rgba(255,43,60,0.18)",
+                  }}
+                >
+                  {primaryCta.label}
+                </Link>
+              ) : null}
 
               <button
                 type="button"
@@ -168,18 +173,20 @@ export function Navbar() {
             <div className="sp-glass sp-neon-border p-5">
               <div className="mb-4 flex items-center justify-between">
                 <Logo />
-                <Link
-                  href={primaryCta.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-xl px-3 py-2 text-sm font-semibold tracking-wide text-white"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, rgba(255,43,60,0.95), rgba(255,77,94,0.85))",
-                    boxShadow: "0 0 28px rgba(255,43,60,0.25)",
-                  }}
-                >
-                  {primaryCta.label}
-                </Link>
+                {primaryCta ? (
+                  <Link
+                    href={primaryCta.href}
+                    onClick={() => setOpen(false)}
+                    className="rounded-xl px-3 py-2 text-sm font-semibold tracking-wide text-white"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(255,43,60,0.95), rgba(255,77,94,0.85))",
+                      boxShadow: "0 0 28px rgba(255,43,60,0.25)",
+                    }}
+                  >
+                    {primaryCta.label}
+                  </Link>
+                ) : null}
               </div>
 
               <div className="grid gap-2">
@@ -212,13 +219,15 @@ export function Navbar() {
                 ))}
               </div>
 
-              <a
-                href={`tel:${business.phone.replace(/\s/g, "")}`}
-                onClick={() => setOpen(false)}
-                className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold tracking-wide text-white/90 transition-colors hover:bg-white/10"
-              >
-                {business.phone}
-              </a>
+              {features.bookingSlots ? (
+                <a
+                  href={`tel:${business.phone.replace(/\s/g, "")}`}
+                  onClick={() => setOpen(false)}
+                  className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold tracking-wide text-white/90 transition-colors hover:bg-white/10"
+                >
+                  {business.phone}
+                </a>
+              ) : null}
             </div>
 
             <div className="mt-10 text-center text-xs text-white/55">

@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Calendar, Clock, Gamepad2, Sparkles, Users, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/Button";
-import { business } from "@/data/content";
 
 const slides = [
   {
@@ -109,7 +107,7 @@ export function BookingLaunchSection() {
 
             <p className="mt-4 max-w-lg text-sm leading-7 text-white/75 sm:text-base">
               We&apos;re polishing the booking experience: pick a simulator, choose your slot,
-              and get instant confirmation. Until then, call or message us to lock in your session.
+              and get instant confirmation — all from the website. Stay tuned for the launch.
             </p>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -132,18 +130,6 @@ export function BookingLaunchSection() {
               ))}
             </div>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button
-                href={`tel:${business.phone.replace(/\s/g, "")}`}
-                size="lg"
-                className="w-full sm:w-auto"
-              >
-                Call to Book
-              </Button>
-              <Button href="/contact" variant="secondary" size="lg" className="w-full sm:w-auto">
-                Contact Us
-              </Button>
-            </div>
           </div>
 
           {/* Slider */}

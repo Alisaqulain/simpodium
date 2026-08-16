@@ -1,12 +1,13 @@
 import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { business } from "@/data/content";
+import { features } from "@/config/features";
 import { ContactForm } from "./ui/ContactForm";
 
 export const metadata = {
   title: "Contact",
   description:
-    "Contact SIM PODIUM — phone, email, address, and map. Get in touch for bookings, events, and collaborations.",
+    "Contact SIM PODIUM — email, address, and map. Get in touch for events, partnerships, and general inquiries.",
 };
 
 export default function ContactPage() {
@@ -24,8 +25,8 @@ export default function ContactPage() {
         <Reveal>
           <SectionHeading
             eyebrow="CONTACT"
-            title="Let’s plan your next session"
-            desc="Bookings, events, group racing nights, partnerships—reach out and we’ll respond quickly."
+            title="Get in touch"
+            desc="Events, group racing nights, partnerships, and general inquiries — reach out and we’ll respond quickly."
           />
         </Reveal>
       </section>
@@ -57,9 +58,16 @@ export default function ContactPage() {
                     <div className="text-xs font-semibold tracking-[0.22em] text-white/55">
                       PHONE
                     </div>
-                    <a className="mt-1 block hover:text-white" href={`tel:${business.phone.replace(/\s/g, "")}`}>
-                      {business.phone}
-                    </a>
+                    {features.bookingSlots ? (
+                      <a
+                        className="mt-1 block hover:text-white"
+                        href={`tel:${business.phone.replace(/\s/g, "")}`}
+                      >
+                        {business.phone}
+                      </a>
+                    ) : (
+                      <div className="mt-1">{business.phone}</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -85,8 +93,8 @@ export default function ContactPage() {
                   Send a message
                 </div>
                 <p className="mt-2 text-sm leading-7 text-white/70">
-                  Share your preferred time/date, group size, and what you want to
-                  race. We’ll confirm quickly.
+                  Share your message and we&apos;ll get back to you about events, partnerships,
+                  or general questions.
                 </p>
                 <div className="mt-6">
                   <ContactForm />

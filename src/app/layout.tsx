@@ -4,6 +4,12 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
+import {
+  LaunchingSoonBanner,
+  launchingSoonBannerOffsetClass,
+} from "@/components/site/LaunchingSoonBanner";
+import { features } from "@/config/features";
+import { cn } from "@/lib/utils";
 
 const ScrollProgress = dynamic(
   () =>
@@ -11,9 +17,9 @@ const ScrollProgress = dynamic(
   { ssr: false },
 );
 
-const AnimatedCursor = dynamic(
+const ComingSoonPopup = dynamic(
   () =>
-    import("@/components/site/AnimatedCursor").then((m) => m.AnimatedCursor),
+    import("@/components/site/ComingSoonPopup").then((m) => m.ComingSoonPopup),
   { ssr: false },
 );
 
@@ -38,7 +44,7 @@ export const metadata: Metadata = {
     template: "%s — SIM PODIUM",
   },
   description:
-    "SIM PODIUM is a premium racing simulator gaming cafe in Indiranagar, Bengaluru. Book F1-inspired simulators, static & motion racing rigs, multiplayer racing, esports practice, and an arcade lounge experience.",
+    "SIM PODIUM is a premium racing simulator gaming cafe in Indiranagar, Bengaluru. F1-inspired simulators, static & motion racing rigs, multiplayer racing, esports practice, and an arcade lounge experience.",
   keywords: [
     "sim racing Bangalore",
     "racing simulator Bangalore",
@@ -64,7 +70,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SIM PODIUM — Premium Sim Racing Lounge, Bengaluru",
     description:
-      "The ultimate sim racing experience in Bangalore. Book your slot, race like a pro, and chill in a premium gaming cafe vibe.",
+      "The ultimate sim racing experience in Bangalore. Race like a pro and chill in a premium gaming cafe vibe.",
     type: "website",
     locale: "en_IN",
     url: "/",
@@ -94,12 +100,23 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
+        className={cn(
+          `${inter.variable} ${jetbrainsMono.variable} antialiased`,
+          launchingSoonBannerOffsetClass,
+        )}
       >
         <ScrollProgress />
-        <AnimatedCursor />
+        <LaunchingSoonBanner />
+        <ComingSoonPopup />
         <Navbar />
-        <main className="relative z-10 pt-24">{children}</main>
+        <main
+          className={cn(
+            "relative z-10",
+            features.bookingSlots ? "pt-24" : "pt-[calc(var(--sp-banner-h)+6rem)]",
+          )}
+        >
+          {children}
+        </main>
         <Footer />
       </body>
     </html>
