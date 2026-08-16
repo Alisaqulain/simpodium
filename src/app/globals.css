@@ -27,7 +27,8 @@
   .sp-coming-soon-popup,
   .sp-blink-label,
   .sp-blink-banner-text,
-  .sp-blink-icon {
+  .sp-blink-icon,
+  .sp-hero-flash-banner {
     animation: none !important;
   }
 }
@@ -82,6 +83,23 @@
 
 .sp-blink-icon {
   animation: sp-blink-icon 1.4s ease-in-out infinite;
+}
+
+@keyframes sp-hero-flash-bg {
+  0%,
+  100% {
+    filter: brightness(1);
+    box-shadow: 0 0 28px rgba(255, 43, 60, 0.45), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    filter: brightness(1.12);
+    box-shadow: 0 0 42px rgba(255, 43, 60, 0.75), 0 0 64px rgba(255, 43, 60, 0.35),
+      0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.sp-hero-flash-banner {
+  animation: sp-hero-flash-bg 1.4s ease-in-out infinite;
 }
 
 :root {

@@ -4,6 +4,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { HeroGamingSlider } from "@/components/site/HeroGamingSlider";
+import { HeroLaunchBanner } from "@/components/site/HeroLaunchBanner";
 import { BookingLaunchSection } from "@/components/site/BookingLaunchSection";
 import { GallerySlider } from "@/components/ui/GallerySlider";
 
@@ -81,10 +82,22 @@ export default async function Home() {
   </div>
 
         <div className="sp-container relative z-10 py-9 sm:py-16 lg:py-24">
+          {!features.bookingSlots || !features.shop || !features.cafe ? (
+            <Reveal y={0} transition={{ duration: 0.2 }}>
+              <HeroLaunchBanner className="mb-5 sm:mb-6 lg:hidden" />
+            </Reveal>
+          ) : null}
+
           <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12 lg:gap-12">
 
       {/* TEXT */}
       <div className="lg:col-span-7 order-2 lg:order-1 text-center lg:text-left">
+
+        {!features.bookingSlots || !features.shop || !features.cafe ? (
+          <Reveal y={0} transition={{ duration: 0.2 }}>
+            <HeroLaunchBanner className="mb-5 hidden lg:block" />
+          </Reveal>
+        ) : null}
         
         <Reveal>
           <div className="inline-flex items-center justify-center lg:justify-start gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] sm:text-xs tracking-[0.2em] text-white/80">
